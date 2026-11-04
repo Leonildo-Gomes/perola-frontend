@@ -36,3 +36,6 @@ next-env.d.ts
 
 docs/
 .env
+.agents/
+.claude/
+.mcp.json
