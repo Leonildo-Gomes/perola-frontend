@@ -5,6 +5,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { getQueryClient } from "@/lib/query-client";
 import type { TokenPair } from "@/types/api";
 import type { AuthResponse, BusinessMembership, UserProfile } from "@/types/auth";
+import { authStorage, setRememberSession } from "./auth-storage";
 import { useTenantStore } from "./tenant-store";
 
 interface AuthState {
@@ -13,7 +14,7 @@ interface AuthState {
   user: UserProfile | null;
   memberships: BusinessMembership[];
   isAuthenticated: boolean;
-  login: (response: AuthResponse) => void;
+  login: (response: AuthResponse, remember?: boolean) => void;
   setTokens: (tokens: TokenPair) => void;
   updateUser: (user: Partial<UserProfile>) => void;
   logout: () => void;
@@ -29,7 +30,8 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       memberships: [],
       isAuthenticated: false,
-      login: ({ accessToken, refreshToken, user }) => {
+      login: ({ accessToken, refreshToken, user }, remember = true) => {
+        setRememberSession(remember);
         const { businesses = [], ...profile } = user;
         const memberships: BusinessMembership[] = businesses.map((b) => ({
           businessId: b.businessId,
@@ -57,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: AUTH_STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => authStorage),
       skipHydration: true,
       partialize: (s) => ({
         accessToken: s.accessToken,
