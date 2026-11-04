@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%; /* #F8FAFC - slate-50 */
+    --foreground: 222 47% 11%; /* #0F172A - slate-900 */
+
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary: #0D9488 (Teal 600) -> hsl(175 84% 32%) */
+    --primary: 175 84% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: #F0FDFA (Teal 50) */
+    --secondary: 166 76% 97%;
+    --secondary-foreground: 175 77% 26%;
+
+    /* Muted: Slate 100 / Slate 500 */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Accent */
+    --accent: 166 76% 97%;
+    --accent-foreground: 175 77% 26%;
+
+    /* Destructive / Coral: #E11D48 -> hsl(347 77% 50%) */
+    --destructive: 347 77% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border & Input */
+    --border: 214 32% 91%; /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 175 84% 32%;
+
+    /* Roundness: ROUND_TWELVE = 12px (0.75rem) */
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Pérola Typography Utilities according to DESIGN.md */
+@layer utilities {
+  .text-display {
+    font-size: 2rem;
+    line-height: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  .text-h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .text-h2 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  .text-h3 {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .text-body-lg {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+  }
+  .text-body {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+  }
+  .text-caption {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+  }
+  .text-price {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    font-weight: 800;
+    font-family: var(--font-inter), sans-serif;
+  }
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
