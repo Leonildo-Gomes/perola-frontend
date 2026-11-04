@@ -64,19 +64,19 @@ export function RegisterContainer() {
 
   return (
     <AuthCard
-      title="Crie a sua conta Pérola"
-      description="Marque serviços de beleza ou gira o seu salão."
+      title="Criar a sua conta no Pérola"
+      description="Junte-se à maior plataforma de beleza e bem-estar de Cabo Verde"
       footer={
         <>
           Já tem conta?{" "}
-          <Link href="/login" className="font-semibold text-teal-600 hover:underline">
-            Iniciar sessão
+          <Link href="/login" className="font-semibold text-teal-700 hover:underline">
+            Inicie sessão
           </Link>
         </>
       }
     >
       <SocialAuthButton mode="register" disabled={isLoading} onCredential={handleGoogle} />
-      <AuthDivider />
+      <AuthDivider>ou preencha os seus dados</AuthDivider>
       <RegisterForm isLoading={isLoading} serverError={error} emailConflict={emailConflict} onSubmit={handleSubmit} />
     </AuthCard>
   );

@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200",
         link:
           "text-teal-600 underline-offset-4 hover:underline p-0 h-auto active:scale-100 font-medium",
+        brand:
+          "bg-perola-deep text-white shadow-md shadow-perola-deep/15 hover:bg-perola-deep-container active:bg-perola-deep",
         gold:
           "bg-amber-600 text-white hover:bg-amber-700 active:bg-amber-800 shadow-sm",
       },

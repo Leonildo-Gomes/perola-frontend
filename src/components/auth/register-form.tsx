@@ -1,17 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, CalendarCheck, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Mail, ShieldCheck, Store, User } from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { registerSchema, type RegisterFormValues, type UserIntent } from "@/lib/validations/auth";
+import { passwordStrength, registerSchema, type RegisterFormValues, type UserIntent } from "@/lib/validations/auth";
 import { AuthAlert } from "./auth-alert";
 import { Field } from "./field";
+import { IconInput } from "./icon-input";
 import { PasswordInput } from "./password-input";
-import { PasswordStrength } from "./password-strength";
+import { PasswordStrength, STRENGTH_LABELS } from "./password-strength";
 import { PhoneInputCV } from "./phone-input-cv";
 
 export interface RegisterFormProps {
@@ -23,9 +23,9 @@ export interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
 }
 
-const INTENTS: { value: UserIntent; label: string; icon: typeof CalendarCheck }[] = [
-  { value: "CUSTOMER", label: "Quero agendar serviços", icon: CalendarCheck },
-  { value: "BUSINESS_OWNER", label: "Quero registar o meu salão", icon: Building2 },
+const INTENTS: { value: UserIntent; label: string; icon: typeof User }[] = [
+  { value: "CUSTOMER", label: "Agendar serviços", icon: User },
+  { value: "BUSINESS_OWNER", label: "Registar salão", icon: Store },
 ];
 
 export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }: RegisterFormProps) {
@@ -57,7 +57,7 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
         control={control}
         name="intent"
         render={({ field }) => (
-          <fieldset className="grid grid-cols-1 gap-2 sm:grid-cols-2" disabled={isLoading}>
+          <fieldset className="grid grid-cols-2 gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1" disabled={isLoading}>
             <legend className="sr-only">O que pretende fazer?</legend>
             {INTENTS.map(({ value, label, icon: Icon }) => {
               const selected = field.value === value;
@@ -65,8 +65,8 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
                 <label
                   key={value}
                   className={cn(
-                    "flex min-h-[56px] cursor-pointer items-center gap-2 rounded-xl border p-3 text-sm font-medium transition-colors",
-                    selected ? "border-teal-600 bg-teal-50 text-teal-700" : "border-slate-200 text-slate-700 hover:bg-slate-50",
+                    "flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors focus-within:ring-2 focus-within:ring-teal-600",
+                    selected ? "bg-white text-teal-700 shadow-sm" : "text-slate-500 hover:text-slate-900",
                   )}
                 >
                   <input
@@ -77,7 +77,7 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
                     checked={selected}
                     onChange={() => field.onChange(value)}
                   />
-                  <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                  <Icon className="h-4 w-4" aria-hidden />
                   {label}
                 </label>
               );
@@ -86,8 +86,9 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
         )}
       />
 
-      <Field id="name" label="Nome completo" error={errors.name?.message}>
-        <Input
+      <Field id="name" label="Nome Completo" error={errors.name?.message}>
+        <IconInput
+          icon={User}
           id="name"
           autoComplete="name"
           placeholder="ex: Carlos Semedo"
@@ -98,7 +99,8 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
         />
       </Field>
       <Field id="email" label="Email" error={errors.email?.message}>
-        <Input
+        <IconInput
+          icon={Mail}
           id="email"
           type="email"
           autoComplete="email"
@@ -109,7 +111,7 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
           {...register("email")}
         />
       </Field>
-      <Field id="phone" label="Telemóvel" error={errors.phone?.message}>
+      <Field id="phone" label="Telefone de Cabo Verde" error={errors.phone?.message}>
         <Controller
           control={control}
           name="phone"
@@ -127,7 +129,18 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
           )}
         />
       </Field>
-      <Field id="password" label="Palavra-passe" error={errors.password?.message}>
+      <Field
+        id="password"
+        label="Palavra-passe"
+        error={errors.password?.message}
+        aside={
+          password.length >= 8 ? (
+            <span className="rounded-md bg-teal-50 px-2 py-0.5 text-xs font-semibold text-teal-700">
+              {STRENGTH_LABELS[passwordStrength(password)]}
+            </span>
+          ) : null
+        }
+      >
         <PasswordInput
           id="password"
           autoComplete="new-password"
@@ -150,7 +163,10 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
             aria-describedby={errors.terms ? "terms-error" : undefined}
             {...register("terms")}
           />
-          <span>Li e aceito os Termos de Utilização e a Política de Privacidade da Pérola.</span>
+          <span>
+            Li e aceito os <span className="font-semibold text-teal-700 underline">Termos de Utilização</span> e a{" "}
+            <span className="font-semibold text-teal-700 underline">Política de Privacidade</span> do Pérola.
+          </span>
         </label>
         {errors.terms && (
           <p id="terms-error" className="text-xs text-rose-600">
@@ -165,9 +181,16 @@ export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />A criar a sua conta Pérola...
           </>
         ) : (
-          "Criar Conta"
+          <>
+            Criar Conta
+            <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+          </>
         )}
       </Button>
+      <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
+        <ShieldCheck className="h-4 w-4 text-teal-600" aria-hidden />
+        Dados protegidos e suporte local em Cabo Verde
+      </p>
     </form>
   );
 }

@@ -20,7 +20,7 @@ interface AdminNavItem {
 }
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
-  { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/schedule", label: "Agenda", icon: CalendarDays },
   { href: "/services", label: "Serviços", icon: Scissors },
   { href: "/team", label: "Equipa", icon: Users },
@@ -49,13 +49,14 @@ export function AdminNav({ collapsed = false, onNavigate }: AdminNavProps) {
                 aria-label={collapsed ? label : undefined}
                 title={collapsed ? label : undefined}
                 className={cn(
-                  "flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors",
-                  collapsed && "justify-center",
-                  active ? "bg-teal-600 text-white" : "text-slate-700 hover:bg-slate-100",
+                  "flex min-h-[48px] items-center gap-3 rounded-xl px-3.5 text-sm font-semibold transition-colors",
+                  collapsed && "justify-center px-0",
+                  active ? "bg-perola-mint text-perola-deep" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
                 )}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                {!collapsed && <span>{label}</span>}
+                {!collapsed && <span className="flex-1">{label}</span>}
+                {!collapsed && active && <span aria-hidden className="h-2 w-2 rounded-full bg-perola-deep" />}
               </Link>
             </li>
           );

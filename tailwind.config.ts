@@ -62,6 +62,12 @@ const config: Config = {
             dark: "#0F766E",
             light: "#F0FDFA",
           },
+          // Stitch screens: primary action / active state (#00685f) and mint badge (#CCFBF1)
+          deep: {
+            DEFAULT: "#00685F",
+            container: "#008378",
+          },
+          mint: "#CCFBF1",
           gold: {
             DEFAULT: "#D97706",
             light: "#FEF3C7",

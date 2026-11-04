@@ -52,12 +52,12 @@ export function LoginContainer() {
 
   return (
     <AuthCard
-      title="Bem-vindo(a) de volta"
-      description="Entre para gerir as suas marcações."
+      title="Bem-vindo de volta"
+      description="Inicie sessão para gerir os seus agendamentos ou o seu salão em Cabo Verde"
       footer={
         <>
           Ainda não tem conta?{" "}
-          <Link href={returnUrl ? `/register?next=${encodeURIComponent(returnUrl)}` : "/register"} className="font-semibold text-teal-600 hover:underline">
+          <Link href={returnUrl ? `/register?next=${encodeURIComponent(returnUrl)}` : "/register"} className="font-semibold text-perola-deep hover:underline">
             Crie uma conta gratuita
           </Link>
         </>
@@ -66,6 +66,9 @@ export function LoginContainer() {
       <SocialAuthButton mode="login" disabled={isLoading} onCredential={handleGoogle} />
       <AuthDivider />
       <LoginForm isLoading={isLoading} serverError={error} onSubmit={handleSubmit} />
+      <p className="mt-6 text-center text-xs text-slate-500">
+        Ao continuar, aceita os Termos de Serviço e a Política de Privacidade da Pérola.
+      </p>
     </AuthCard>
   );
 }

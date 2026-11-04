@@ -172,6 +172,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 
 ---
 
+> **Nota Stitch:** os IDs de ecrã truncados nesta tabela (§5) não resolvem no MCP; usar `list_screens` do projeto. IDs completos de FE-004/FE-005 estão em `docs/FRONTEND_TASKS.md`. O ecrã usa `#00685F` nos CTAs (token `perola.deep`).
+
 ## 7. Próximos Passos Imediatos (Next Action Items)
 
 A rota crítica de arranque segue a seguinte ordem sequencial estrita:

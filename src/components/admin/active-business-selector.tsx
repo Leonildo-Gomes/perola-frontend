@@ -1,7 +1,6 @@
 "use client";
 
-import { Building2, Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BadgeCheck, Check, ChevronDown, Store } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,30 +9,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import type { BusinessMembership } from "@/types/auth";
 
 export interface ActiveBusinessSelectorProps {
   memberships: BusinessMembership[];
   activeBusinessId: string | null;
   onSelectBusiness: (businessId: string) => void;
+  /** `pill`: bordered pill (desktop bar). `plain`: bold name + chevron (mobile header). */
+  variant?: "pill" | "plain";
 }
+
+export const businessLabel = (m: BusinessMembership) => m.businessName ?? `Salão ${m.businessId.slice(0, 6)}`;
 
 export function ActiveBusinessSelector({
   memberships,
   activeBusinessId,
   onSelectBusiness,
+  variant = "pill",
 }: ActiveBusinessSelectorProps) {
   const active = memberships.find((m) => m.businessId === activeBusinessId);
-  const labelOf = (m: BusinessMembership) => m.businessName ?? `Salão ${m.businessId.slice(0, 6)}`;
+  const name = active ? businessLabel(active) : "Selecionar salão";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="max-w-[14rem] gap-2 px-3" aria-label="Alternar salão ativo">
-          <Building2 className="h-4 w-4 shrink-0 text-teal-600" aria-hidden />
-          <span className="truncate">{active ? labelOf(active) : "Selecionar salão"}</span>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-        </Button>
+        <button
+          type="button"
+          aria-label="Alternar salão ativo"
+          className={cn(
+            "flex min-h-[44px] max-w-full items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-perola-deep",
+            variant === "pill"
+              ? "rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+              : "rounded-lg text-base font-bold text-slate-900",
+          )}
+        >
+          {variant === "pill" && <Store className="h-4 w-4 shrink-0 text-perola-deep" aria-hidden />}
+          <span className="truncate">{name}</span>
+          {variant === "pill" && active && <BadgeCheck className="h-4 w-4 shrink-0 text-perola-deep" aria-hidden />}
+          <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel>Os teus salões</DropdownMenuLabel>
@@ -48,10 +63,10 @@ export function ActiveBusinessSelector({
             onSelect={() => onSelectBusiness(m.businessId)}
           >
             <span className="flex flex-col">
-              <span className="truncate">{labelOf(m)}</span>
+              <span className="truncate">{businessLabel(m)}</span>
               <span className="text-xs text-slate-500">{m.role === "OWNER" ? "Proprietário" : "Colaborador"}</span>
             </span>
-            {m.businessId === activeBusinessId && <Check className="h-4 w-4 text-teal-600" aria-hidden />}
+            {m.businessId === activeBusinessId && <Check className="h-4 w-4 text-perola-deep" aria-hidden />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

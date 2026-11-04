@@ -6,7 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
-import { AdminNav } from "./admin-nav";
+import { AdminBottomNav } from "./admin-bottom-nav";
+import { AdminSidebar } from "./admin-sidebar";
 import { TenantBar } from "./tenant-bar";
 
 /** Client shell for `(admin)`: session guard + TenantBar + collapsible sidebar. */
@@ -38,14 +39,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="flex">
         <aside
           className={cn(
-            "sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 border-r border-slate-200 bg-white p-3 transition-[width] md:block",
+            "sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 transition-[width] md:block",
             collapsed ? "w-[72px]" : "w-60",
           )}
         >
-          <AdminNav collapsed={collapsed} />
+          <AdminSidebar collapsed={collapsed} />
         </aside>
-        <main className="min-w-0 flex-1 p-4 md:p-6">{children}</main>
+        <main className="min-w-0 flex-1 p-4 pb-24 md:p-6 md:pb-6">{children}</main>
       </div>
+      <AdminBottomNav />
     </div>
   );
 }

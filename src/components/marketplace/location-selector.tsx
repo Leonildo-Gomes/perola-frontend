@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { ChevronDown, MapPin } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,19 +15,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ISLANDS, ISLAND_CITIES } from "@/lib/geography";
 import { useLocationStore } from "@/stores/location-store";
 
-export function LocationSelector() {
+interface LocationSelectorProps {
+  /** `stacked`: pin circle + two lines (mobile header). `inline`: single line (desktop search pill). */
+  variant?: "stacked" | "inline";
+}
+
+export function LocationSelector({ variant = "inline" }: LocationSelectorProps) {
   const { island, city, setLocation } = useLocationStore();
   const [open, setOpen] = useState(false);
   const cities = island ? ISLAND_CITIES[island] ?? [] : [];
-  const label = city ? `${city}` : island ?? "Toda a Cabo Verde";
+  const label = city && island ? `${city}, ${island}` : island ?? "Todas as ilhas";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="max-w-[10rem] gap-1.5 px-3 sm:max-w-none" aria-label={`Localização: ${label}. Alterar`}>
-          <MapPin className="h-4 w-4 shrink-0 text-teal-600" aria-hidden />
-          <span className="truncate">{label}</span>
-        </Button>
+        {variant === "stacked" ? (
+          <button
+            type="button"
+            aria-label={`Localização: ${label}. Alterar`}
+            className="flex min-h-[44px] items-center gap-2.5 text-left"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-perola-mint text-perola-deep">
+              <MapPin className="h-5 w-5" aria-hidden />
+            </span>
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="flex items-center gap-1 text-base font-bold text-slate-900">
+                <span className="truncate">{label}</span>
+                <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+              </span>
+              <span className="font-accent text-[10px] font-semibold uppercase tracking-[0.14em] text-perola-deep">
+                Cabo Verde
+              </span>
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={`Localização: ${label}. Alterar`}
+            className="flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+          >
+            <MapPin className="h-5 w-5 text-perola-deep" aria-hidden />
+            <span className="max-w-[10rem] truncate">{label}</span>
+            <ChevronDown className="h-4 w-4 text-slate-500" aria-hidden />
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -63,7 +94,7 @@ export function LocationSelector() {
             <Button variant="outline" className="flex-1" onClick={() => { setLocation(null, null); setOpen(false); }}>
               Limpar
             </Button>
-            <Button className="flex-1" onClick={() => setOpen(false)}>
+            <Button variant="brand" className="flex-1" onClick={() => setOpen(false)}>
               Aplicar
             </Button>
           </div>

@@ -1,24 +1,31 @@
+import { Flower2 } from "lucide-react";
 import { Logo } from "@/components/common/logo";
-import { cn } from "@/lib/utils";
 
 interface AuthCardProps {
   title: string;
   description?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  className?: string;
 }
 
-export function AuthCard({ title, description, children, footer, className }: AuthCardProps) {
+/** Brand header (pearl emblem on mobile, logo on desktop) + title + content + footer. */
+export function AuthCard({ title, description, children, footer }: AuthCardProps) {
   return (
-    <div className={cn("w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8", className)}>
-      <div className="mb-6 flex flex-col items-center gap-2 text-center">
-        <Logo />
-        <h1 className="text-h3 text-slate-900">{title}</h1>
-        {description && <p className="text-sm text-slate-600">{description}</p>}
+    <div className="flex flex-col">
+      <div className="mb-6 text-center lg:mb-8 lg:text-left">
+        <div className="mb-4 hidden lg:block">
+          <Logo tagline="Beauty & Wellness Platform" />
+        </div>
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-tr from-perola-deep to-perola-mint p-0.5 shadow-lg shadow-perola-deep/10 lg:hidden">
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-white text-perola-deep">
+            <Flower2 className="h-7 w-7" aria-hidden />
+          </span>
+        </div>
+        <h1 className="text-[26px] font-bold leading-[34px] tracking-tight text-slate-900 lg:text-[32px] lg:leading-10">{title}</h1>
+        {description && <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500 lg:mx-0 lg:max-w-none lg:text-base">{description}</p>}
       </div>
       {children}
-      {footer && <div className="mt-6 border-t border-slate-100 pt-4 text-center text-sm text-slate-600">{footer}</div>}
+      {footer && <div className="mt-6 text-center text-sm text-slate-500">{footer}</div>}
     </div>
   );
 }
