@@ -152,8 +152,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | **`FE-001`** | Scaffolding Next.js, Tailwind, shadcn/ui & Tokens | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | Next.js 15, Tailwind, shadcn/ui e tokens configurados |
 | **`FE-002`** | Cliente HTTP, Interceptores JWT/Tenant & RFC 7807 | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | `src/lib/api/{client,errors}.ts` + `src/types/api.ts`; ponte de sessão `configureApiClient()` (stores registam-se em FE-003) |
-| **`FE-003`** | Stores Zustand: `useAuthStore` e `useTenantStore` | Wave 0 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-002` |
-| **`FE-004`** | Layouts Globais: `PublicLayout` e `AdminLayout` | Wave 1 | P1 (Alto) | ⚪ Planeado | Depende de `FE-003` |
+| **`FE-003`** | Stores Zustand: `useAuthStore` e `useTenantStore` | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | `src/stores/{auth-store,tenant-store,bridge}.ts`, `Providers` (QueryClient + hidratação) |
+| **`FE-004`** | Layouts Globais: `PublicLayout` e `AdminLayout` | Wave 1 | P1 (Alto) | 🟡 Pronto p/ Início | Depende de `FE-003` |
 | **`FE-005`** | Autenticação (Login Email/Google & Registo com +238) | Wave 1 | P1 (Alto) | ⚪ Planeado | Depende de `FE-003`, `FE-004` |
 | **`FE-006`** | Marketplace & Explore (`/(public)/explore`) | Wave 2 | P1 (Alto) | ⚪ Planeado | Depende de `FE-004` |
 | **`FE-007`** | Booking Wizard & Recuperação de Conflito 409 | Wave 2 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-006` |
@@ -187,7 +187,7 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - Implementar interceptor de injeção automática de `X-Business-Id` nas rotas `/(admin)/*`.
    - Implementar interceptor de autorização JWT (`Authorization: Bearer <token>`) e fluxo de refresh token.
    - Implementar deserializador de `application/problem+json` e classe `SlotConflictError` para recuperação interativa de erros 409.
-1. **Executar Tarefa `FE-003` (Estado Global Zustand):**
+1. **✅ `FE-003` concluída (Estado Global Zustand):**
    - Implementar `useAuthStore` (token, dados do usuário, memberships).
    - Implementar `useTenantStore` (salão ativo `activeBusinessId`, persistência local e evento de troca).
 1. **Prosseguir para Wave 1:**
