@@ -15,7 +15,7 @@
 | **Data da Última Atualização** | Novembro de 2026 |
 | **Arquiteto & Lead Frontend** | Leonildo Gomes |
 | **Projeto Google Stitch** | [https://stitch.withgoogle.com/projects/9636073377251149308](https://stitch.withgoogle.com/projects/9636073377251149308) |
-| **Documentos-Fonte em `docs/`** | `docs/DESIGN.md` • `docs/FRONTEND_SPEC.md` • `docs/FRONTEND_TASKS.md` |
+| **Documentos-Fonte em `docs/`** | `docs/PRD.md` • `docs/ARCHITECTURE.md` • `docs/API.md` • `docs/DESIGN.md` • `docs/FRONTEND_SPEC.md` • `docs/FRONTEND_TASKS.md` • `docs/DOMAIN.md` • `docs/DATABASE.md` • `docs/BACKEND_TASKS.md` (não versionados) |
 
 ---
 
@@ -151,7 +151,7 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | ID | Título da Tarefa | Onda | Prioridade | Estado | Bloqueios / Notas |
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | **`FE-001`** | Scaffolding Next.js, Tailwind, shadcn/ui & Tokens | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | Next.js 15, Tailwind, shadcn/ui e tokens configurados |
-| **`FE-002`** | Cliente HTTP, Interceptores JWT/Tenant & RFC 7807 | Wave 0 | P0 (Crítico) | 🟡 **Pronto p/ Início** | Depende de `FE-001` |
+| **`FE-002`** | Cliente HTTP, Interceptores JWT/Tenant & RFC 7807 | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | `src/lib/api/{client,errors}.ts` + `src/types/api.ts`; ponte de sessão `configureApiClient()` (stores registam-se em FE-003) |
 | **`FE-003`** | Stores Zustand: `useAuthStore` e `useTenantStore` | Wave 0 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-002` |
 | **`FE-004`** | Layouts Globais: `PublicLayout` e `AdminLayout` | Wave 1 | P1 (Alto) | ⚪ Planeado | Depende de `FE-003` |
 | **`FE-005`** | Autenticação (Login Email/Google & Registo com +238) | Wave 1 | P1 (Alto) | ⚪ Planeado | Depende de `FE-003`, `FE-004` |
