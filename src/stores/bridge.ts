@@ -2,6 +2,7 @@
 
 import { configureApiClient } from "@/lib/api/client";
 import { AUTH_STORAGE_KEY, useAuthStore } from "./auth-store";
+import { LOCATION_STORAGE_KEY, useLocationStore } from "./location-store";
 import { TENANT_STORAGE_KEY, useTenantStore } from "./tenant-store";
 
 let initialized = false;
@@ -24,9 +25,11 @@ export function initStores() {
 
   void useAuthStore.persist.rehydrate();
   void useTenantStore.persist.rehydrate();
+  void useLocationStore.persist.rehydrate();
 
   window.addEventListener("storage", (e) => {
     if (e.key === AUTH_STORAGE_KEY) void useAuthStore.persist.rehydrate();
     if (e.key === TENANT_STORAGE_KEY) void useTenantStore.persist.rehydrate();
+    if (e.key === LOCATION_STORAGE_KEY) void useLocationStore.persist.rehydrate();
   });
 }
