@@ -8,7 +8,16 @@ import {
 
 export * from "./errors";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/$/, "");
+/**
+ * Empty (default) = same-origin: requests go to `/api/v1/*` and Next proxies them to BACKEND_URL
+ * (see next.config.ts), avoiding CORS. Set NEXT_PUBLIC_API_URL to call the API directly.
+ */
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+
+function apiBase(): string {
+  if (API_URL) return API_URL;
+  return typeof window !== "undefined" ? window.location.origin : (process.env.BACKEND_URL ?? "http://localhost:8080");
+}
 
 /**
  * Session bridge. The client does not import the Zustand stores (FE-003);
@@ -58,7 +67,7 @@ export interface RequestOptions extends Omit<RequestInit, "body"> {
 }
 
 function buildUrl(path: string, query?: RequestOptions["query"]) {
-  const url = new URL(`${API_URL}${path.startsWith("/") ? path : `/${path}`}`);
+  const url = new URL(`${apiBase()}${path.startsWith("/") ? path : `/${path}`}`);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));

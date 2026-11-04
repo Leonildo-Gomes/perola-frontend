@@ -155,8 +155,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-003`** | Stores Zustand: `useAuthStore` e `useTenantStore` | Wave 0 | P0 (Crítico) | 🟢 **Concluído & Validado** | `src/stores/{auth-store,tenant-store,bridge}.ts`, `Providers` (QueryClient + hidratação) |
 | **`FE-004`** | Layouts Globais: `PublicLayout` e `AdminLayout` | Wave 1 | P1 (Alto) | 🟢 **Concluído & Validado** | `(public)` + `(admin)` layouts, `MobileBottomNav`, `TenantBar`, `ActiveBusinessSelector`, `LocationSelector` |
 | **`FE-005`** | Autenticação (Login Email/Google & Registo com +238) | Wave 1 | P1 (Alto) | 🟢 **Concluído & Validado** | `/login`, `/register` (RHF+Zod, +238, Google GIS, redirect por papel) |
-| **`FE-006`** | Marketplace & Explore (`/(public)/explore`) | Wave 2 | P1 (Alto) | 🟡 Pronto p/ Início | Depende de `FE-004` |
-| **`FE-007`** | Booking Wizard & Recuperação de Conflito 409 | Wave 2 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-006` |
+| **`FE-006`** | Marketplace & Explore (`/(public)/explore`) | Wave 2 | P1 (Alto) | 🟢 **Concluído & Validado** | `/` e `/explore`: `ServiceFeed`, `ServiceCard`, filtros Ilha→Concelho, scroll infinito |
+| **`FE-007`** | Booking Wizard & Recuperação de Conflito 409 | Wave 2 | P0 (Crítico) | 🟡 Pronto p/ Início | Depende de `FE-006` |
 | **`FE-008`** | Portal do Cliente: Minhas Marcações & Avaliações | Wave 3 | P2 (Médio) | ⚪ Planeado | Depende de `FE-007` |
 | **`FE-009`** | Onboarding do Salão: Cadastro do Negócio (`businesses`) | Wave 4 | P1 (Alto) | 🟡 Pronto p/ Início | Depende de `FE-005` |
 | **`FE-010`** | Catálogo de Serviços & Delegação de Especialistas | Wave 4 | P1 (Alto) | ⚪ Planeado | Depende de `FE-009` |
@@ -195,7 +195,7 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
 1. **Prosseguir para Wave 1:**
    - **✅ `FE-004` concluída:** `PublicLayout` com `MobileBottomNav` e `AdminLayout` com `TenantBar`.
    - **✅ `FE-005` concluída:** Login e Registo com validação `+238` e Google Sign-In. Pendente (sem endpoint na API): recuperação de palavra-passe.
-   - **Próximo:** `FE-006` (Marketplace & Explore), `FE-009` (Onboarding do Salão).
+   - **✅ `FE-006` concluída.** Próximo: `FE-007` (Booking Wizard) e `FE-009` (Onboarding) (Marketplace & Explore), `FE-009` (Onboarding do Salão).
 
 ---
 
