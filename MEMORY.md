@@ -157,7 +157,7 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-005`** | Autenticação (Login Email/Google & Registo com +238) | Wave 1 | P1 (Alto) | 🟢 **Concluído & Validado** | `/login`, `/register` (RHF+Zod, +238, Google GIS, redirect por papel) |
 | **`FE-006`** | Marketplace & Explore (`/(public)/explore`) | Wave 2 | P1 (Alto) | 🟢 **Concluído & Validado** | `/` e `/explore`: `ServiceFeed`, `ServiceCard`, filtros Ilha→Concelho, scroll infinito |
 | **`FE-007`** | Booking Wizard & Recuperação de Conflito 409 | Wave 2 | P0 (Crítico) | 🟢 **Concluído & Validado** | `/book/[serviceId]` (3 passos), `/book/confirmed/[id]`, recuperação 409 |
-| **`FE-008`** | Portal do Cliente: Minhas Marcações & Avaliações | Wave 3 | P2 (Médio) | 🟡 Pronto p/ Início | Depende de `FE-007` |
+| **`FE-008`** | Portal do Cliente: Minhas Marcações & Avaliações | Wave 3 | P2 (Médio) | 🟢 **Concluído & Validado** | `/(customer)/my-bookings` (abas Próximas/Histórico, Reagendar, Cancelar, Avaliar, WhatsApp) |
 | **`FE-009`** | Onboarding do Salão: Cadastro do Negócio (`businesses`) | Wave 4 | P1 (Alto) | 🟡 Pronto p/ Início | Depende de `FE-005` |
 | **`FE-010`** | Catálogo de Serviços & Delegação de Especialistas | Wave 4 | P1 (Alto) | ⚪ Planeado | Depende de `FE-009` |
 | **`FE-011`** | Gestão de Equipa & Colaboradores (`/(admin)/team`) | Wave 4 | P1 (Alto) | ⚪ Planeado | Depende de `FE-010` |
@@ -195,8 +195,9 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
 1. **Prosseguir para Wave 1:**
    - **✅ `FE-004` concluída:** `PublicLayout` com `MobileBottomNav` e `AdminLayout` com `TenantBar`.
    - **✅ `FE-005` concluída:** Login e Registo com validação `+238` e Google Sign-In. Pendente (sem endpoint na API): recuperação de palavra-passe.
-   - **✅ `FE-007` concluída** (Booking Wizard & recuperação 409). Próximo: `FE-008` (Minhas Marcações) 🟡 Pronto p/ Início.
-   - **✅ `FE-006` concluída.** Próximo: `FE-007` (Booking Wizard) e `FE-009` (Onboarding) (Marketplace & Explore), `FE-009` (Onboarding do Salão).
+   - **✅ `FE-007` concluída** (Booking Wizard & recuperação 409).
+   - **✅ `FE-008` concluída:** Portal do Cliente: Minhas Marcações & Avaliações (`/(customer)/my-bookings`).
+   - **🟡 Próximo passo imediato:** `FE-009` (Onboarding do Salão: Cadastro do Negócio).
 
 ---
 
