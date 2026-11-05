@@ -53,7 +53,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
             <span className="font-accent text-xl font-extrabold text-slate-900">{formatCurrency(service.price)}</span>
           </div>
           <Button asChild variant="brand" className="rounded-full px-6">
-            <Link href={`/book/${service.id}`} aria-label={`Agendar ${service.name}`}>
+            <Link href={`/book/${service.id}?businessId=${service.businessId}`} aria-label={`Agendar ${service.name}`}>
               Agendar
               <CalendarDays className="h-4 w-4 ml-2" aria-hidden />
             </Link>
