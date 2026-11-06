@@ -40,6 +40,7 @@ import type { OpenMonthRequest, ScheduleDay } from "@/types/availability";
 import { MonthlyScheduleCard } from "./monthly-schedule-card";
 import { OpenMonthModal } from "./open-month-modal";
 import { WeeklyScheduleForm } from "./weekly-schedule-form";
+import { TimeOffTab } from "./time-off-tab";
 
 export function AvailabilityContainer() {
   const queryClient = useQueryClient();
@@ -407,33 +408,13 @@ export function AvailabilityContainer() {
         </TabsContent>
 
         {/* ------------------------------------------------------------- */}
-        {/* TAB 3: Ausências & Férias (Screen 10 / Par 9 preview / FE-014) */}
+        {/* TAB 3: Ausências & Férias (Screen 10 / Par 9 / FE-014) */}
         {/* ------------------------------------------------------------- */}
         <TabsContent value="time-off" className="mt-0">
-          <div className="border border-slate-200/80 rounded-2xl p-8 bg-white text-center space-y-4 max-w-2xl mx-auto shadow-2xs">
-            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/80 flex items-center justify-center mx-auto">
-              <Palmtree className="w-7 h-7 text-amber-600" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-slate-900">
-                Gestão de Ausências & Bloqueios de Férias
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-                Registe férias, consultas médicas ou folgas pontuais para remover automaticamente esses horários
-                do agendamento público de clientes.
-              </p>
-            </div>
-            <div className="pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setActiveTab("monthly")}
-                className="min-h-[44px] rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs"
-              >
-                ← Voltar à Abertura Mensal
-              </Button>
-            </div>
-          </div>
+          <TimeOffTab
+            employeeId={effectiveEmployeeId}
+            employeeName={activeEmployee?.displayName}
+          />
         </TabsContent>
       </Tabs>
 

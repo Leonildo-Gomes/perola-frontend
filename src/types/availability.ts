@@ -102,3 +102,66 @@ export const MONTH_NAMES = [
   "Dezembro",
 ];
 
+export type TimeOffType =
+  | "VACATION"
+  | "SICK_LEAVE"
+  | "PERSONAL"
+  | "HOLIDAY"
+  | "OTHER";
+
+export interface EmployeeTimeOff {
+  id: string;
+  employeeId: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  isAllDay: boolean;
+  startTime?: string | null; // HH:mm
+  endTime?: string | null; // HH:mm
+  type: TimeOffType;
+  note?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateTimeOffPayload {
+  startDate: string;
+  endDate: string;
+  isAllDay: boolean;
+  startTime?: string | null;
+  endTime?: string | null;
+  type: TimeOffType;
+  note?: string;
+}
+
+export const TIME_OFF_TYPE_CONFIG: Record<
+  TimeOffType,
+  { label: string; badgeClasses: string; description: string }
+> = {
+  VACATION: {
+    label: "Férias Anuais",
+    badgeClasses: "bg-teal-50 text-teal-800 border-teal-200",
+    description: "Período de descanso e férias anuais",
+  },
+  SICK_LEAVE: {
+    label: "Atestado Médico / Saúde",
+    badgeClasses: "bg-rose-50 text-rose-800 border-rose-200",
+    description: "Consulta médica ou baixa de saúde",
+  },
+  PERSONAL: {
+    label: "Assunto Pessoal",
+    badgeClasses: "bg-amber-50 text-amber-800 border-amber-200",
+    description: "Compromisso pessoal ou folga solicitada",
+  },
+  HOLIDAY: {
+    label: "Feriado / Ponte",
+    badgeClasses: "bg-sky-50 text-sky-800 border-sky-200",
+    description: "Feriado oficial ou tolerância de ponto",
+  },
+  OTHER: {
+    label: "Outro Bloqueio",
+    badgeClasses: "bg-slate-100 text-slate-700 border-slate-200",
+    description: "Outro motivo de indisponibilidade da agenda",
+  },
+};
+
+

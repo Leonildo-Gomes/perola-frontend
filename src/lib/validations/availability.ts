@@ -90,8 +90,64 @@ export const openMonthSchema = z.object({
     .optional(),
 });
 
+export const createTimeOffSchema = z
+  .object({
+    type: z.enum(["VACATION", "SICK_LEAVE", "PERSONAL", "HOLIDAY", "OTHER"], {
+      required_error: "Selecione o tipo de ausência",
+    }),
+    startDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Data de início inválida (AAAA-MM-DD)"),
+    endDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Data de fim inválida (AAAA-MM-DD)"),
+    isAllDay: z.boolean().default(true),
+    startTime: z.string().nullable().optional(),
+    endTime: z.string().nullable().optional(),
+    note: z
+      .string()
+      .max(250, "A justificação não pode exceder 250 caracteres")
+      .optional()
+      .or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.endDate < data.startDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "A data de fim deve ser igual ou posterior à data de início",
+        path: ["endDate"],
+      });
+    }
+
+    if (!data.isAllDay) {
+      if (!data.startTime || !timeRegex.test(data.startTime)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Indique a hora de início para ausência parcial",
+          path: ["startTime"],
+        });
+      }
+      if (!data.endTime || !timeRegex.test(data.endTime)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Indique a hora de fim para ausência parcial",
+          path: ["endTime"],
+        });
+      }
+      if (data.startTime && data.endTime && data.endTime <= data.startTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "A hora de saída deve ser posterior à hora de início",
+          path: ["endTime"],
+        });
+      }
+    }
+  });
+
 export type ScheduleBreakFormData = z.infer<typeof scheduleBreakSchema>;
 export type ScheduleDayFormData = z.infer<typeof scheduleDaySchema>;
 export type WeeklyScheduleFormData = z.infer<typeof weeklyScheduleSchema>;
 export type OpenMonthFormData = z.infer<typeof openMonthSchema>;
+export type CreateTimeOffFormData = z.infer<typeof createTimeOffSchema>;
+
 

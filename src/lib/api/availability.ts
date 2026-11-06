@@ -1,5 +1,7 @@
 import type {
   CreateScheduleRequest,
+  CreateTimeOffPayload,
+  EmployeeTimeOff,
   Holiday,
   MonthlySchedule,
   OpenMonthRequest,
@@ -190,4 +192,53 @@ export async function updateWeeklySchedule(
     );
   }
 }
+
+/**
+ * List all time-off, vacations, and blocking periods for an employee (`GET /api/v1/schedule/employees/{id}/time-off`).
+ */
+export async function getTimeOffList(
+  employeeId: string,
+  signal?: AbortSignal,
+): Promise<EmployeeTimeOff[]> {
+  try {
+    const list = await api.get<EmployeeTimeOff[]>(
+      `/api/v1/schedule/employees/${employeeId}/time-off`,
+      {
+        tenant: true,
+        signal,
+      },
+    );
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Register a new vacation, medical absence, or time-off period (`POST /api/v1/schedule/employees/{id}/time-off`).
+ */
+export async function createTimeOff(
+  employeeId: string,
+  payload: CreateTimeOffPayload,
+): Promise<EmployeeTimeOff> {
+  return api.post<EmployeeTimeOff>(
+    `/api/v1/schedule/employees/${employeeId}/time-off`,
+    payload,
+    { tenant: true },
+  );
+}
+
+/**
+ * Delete a time-off period / unblock schedule (`DELETE /api/v1/schedule/employees/{id}/time-off/{timeOffId}`).
+ */
+export async function deleteTimeOff(
+  employeeId: string,
+  timeOffId: string,
+): Promise<void> {
+  return api.delete<void>(
+    `/api/v1/schedule/employees/${employeeId}/time-off/${timeOffId}`,
+    { tenant: true },
+  );
+}
+
 
