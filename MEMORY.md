@@ -164,8 +164,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-012`** | Agenda Diária Operacional (`/(admin)/schedule`) | Wave 5 | P0 (Crítico) | 🟢 **Concluído & Validado** | `/(admin)/schedule` (linha do tempo 08h-18h, multi-coluna por especialista, marcador live CVT, `AppointmentBlock` com ações rápidas, `NewAppointmentModal`) |
 | **`FE-013`** | Disponibilidade: Abertura Mensal & Expediente Semanal | Wave 5 | P0 (Crítico) | 🟢 **Concluído & Validado** | `/(admin)/availability` (Abertura mensal com feriados CV, cards de meses, `OpenMonthModal`, expediente 7 dias, pausas, botão cópia 2ª→dias úteis) |
 | **`FE-014`** | Disponibilidade: Gestão de Ausências & Férias | Wave 5 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/availability` (Aba Ausências: `TimeOffTab`, `TimeOffCard`, `TimeOffFormModal`, tipos de ausência, bloqueio de agenda, badge `FOLGA HOJE`) |
-| **`FE-015`** | Definições e Perfil do Salão (`/(admin)/settings`) | Wave 5 | P2 (Médio) | 🟡 **Pronto p/ Início** | Depende de `FE-009` |
-| **`FE-016`** | Acessibilidade WCAG AA, Resiliência Offline & E2E | Wave 6 | P1 (Alto) | ⚪ Planeado | Depende de `FE-008`, `FE-012`.. |
+| **`FE-015`** | Definições e Perfil do Salão (`/(admin)/settings`) | Wave 5 | P2 (Médio) | 🟢 **Concluído & Validado** | `/(admin)/settings` (Formulário, morada CV, switch de visibilidade pública `isActive`, `PhoneInputCV` +238, fuso `Atlantic/Cape_Verde`, live preview) |
+| **`FE-016`** | Acessibilidade WCAG AA, Resiliência Offline & E2E | Wave 6 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-008`, `FE-012`, `FE-014`, `FE-015` |
 
 > **Legenda de Estado:**  
 > ⚪ *Planeado* | 🟡 *Pronto p/ Início / Próximo Passo* | 🔵 *Em Desenvolvimento* | 🟢 *Concluído & Validado*
@@ -203,7 +203,8 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - **✅ `FE-012` concluída:** Agenda Diária Operacional do Salão (`/(admin)/schedule` com timeline 08h-18h, grelha multi-coluna por especialista, marcador live CVT Praia, `AppointmentBlock` dinâmico com ações imediatas de confirmação/conclusão, `NewAppointmentModal` e filtro por profissional).
    - **✅ `FE-013` concluída:** Disponibilidade: Abertura Mensal & Expediente Semanal (`/(admin)/availability` com abas segmentadas, cards de meses com status `AGENDA ABERTA` vs `AGENDA FECHADA`, `OpenMonthModal` com deteção de feriados oficiais de Cabo Verde e switches de folga/trabalho, `WeeklyScheduleForm` de 7 dias com pausas de almoço, botão de produtividade *"Copiar 2ª para Dias Úteis"*, sugestão padrão CV e seletor de especialista).
    - **✅ `FE-014` concluída:** Disponibilidade: Gestão de Ausências & Férias (`/(admin)/availability` — Tab "Ausências" com `TimeOffTab`, `TimeOffCard`, `TimeOffFormModal`, badges por tipo, indicador pulsante `FOLGA HOJE`, filtros por próximas/histórico, diálogo de confirmação de exclusão e alerta proativo de impacto).
-   - **🟡 `FE-015` pronto para início:** Definições e Perfil do Salão (`/(admin)/settings`).
+   - **✅ `FE-015` concluída:** Definições e Perfil do Salão (`/(admin)/settings` com `BusinessSettingsContainer`, dados institucionais, dropdowns de Ilha→Concelho de Cabo Verde, `PhoneInputCV` com prefixo +238, fuso constante `Atlantic/Cape_Verde`, switch de visibilidade pública `isActive`, barra sticky de gravação e live preview card sincronizado em tempo real).
+   - **🟡 `FE-016` pronto para início:** Acessibilidade WCAG 2.1 AA, Resiliência Offline & Testes E2E.
 
 ---
 
