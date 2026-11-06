@@ -52,3 +52,19 @@ export const formatInstantLong = (iso: string) =>
   new Intl.DateTimeFormat("pt-PT", { timeZone: CV_TIMEZONE, weekday: "long", day: "numeric", month: "long" }).format(
     new Date(iso),
   );
+
+/** "Sexta-feira, 6 de Novembro de 2026" for a date key. */
+export const formatDateHeader = (key: string) => {
+  const [y, m, d] = key.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d, 12));
+  const formatted = new Intl.DateTimeFormat("pt-PT", {
+    timeZone: "UTC",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+  // Capitalize first letter
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+};
+
