@@ -17,6 +17,7 @@ interface AuthState {
   login: (response: AuthResponse, remember?: boolean) => void;
   setTokens: (tokens: TokenPair) => void;
   updateUser: (user: Partial<UserProfile>) => void;
+  addMembership: (membership: BusinessMembership) => void;
   logout: () => void;
 }
 
@@ -49,6 +50,12 @@ export const useAuthStore = create<AuthState>()(
       },
       setTokens: ({ accessToken, refreshToken }) => set({ accessToken, refreshToken }),
       updateUser: (patch) => set((s) => (s.user ? { user: { ...s.user, ...patch } } : s)),
+      addMembership: (membership) =>
+        set((s) => ({
+          memberships: s.memberships.some((m) => m.businessId === membership.businessId)
+            ? s.memberships
+            : [...s.memberships, membership],
+        })),
       logout: () => {
         set({ accessToken: null, refreshToken: null, user: null, memberships: [], isAuthenticated: false });
         useTenantStore.getState().clearActiveBusiness();

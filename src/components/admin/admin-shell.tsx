@@ -33,6 +33,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Onboarding is a focused, distraction-free flow without regular dashboard navigation
+  if (pathname === "/onboarding") {
+    return <div className="min-h-screen bg-slate-50">{children}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <TenantBar sidebarCollapsed={collapsed} onToggleSidebar={() => setCollapsed((c) => !c)} />
