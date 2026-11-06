@@ -159,8 +159,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-007`** | Booking Wizard & Recuperação de Conflito 409 | Wave 2 | P0 (Crítico) | 🟢 **Concluído & Validado** | `/book/[serviceId]` (3 passos), `/book/confirmed/[id]`, recuperação 409 |
 | **`FE-008`** | Portal do Cliente: Minhas Marcações & Avaliações | Wave 3 | P2 (Médio) | 🟢 **Concluído & Validado** | `/(customer)/my-bookings` (abas Próximas/Histórico, Reagendar, Cancelar, Avaliar, WhatsApp) |
 | **`FE-009`** | Onboarding do Salão: Cadastro do Negócio (`businesses`) | Wave 4 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/onboarding` (Nome, Ilha→Concelho, Morada, Telefone +238, Live Preview, sync com `useTenantStore`) |
-| **`FE-010`** | Catálogo de Serviços & Delegação de Especialistas | Wave 4 | P1 (Alto) | 🟡 Pronto p/ Início | Depende de `FE-009` |
-| **`FE-011`** | Gestão de Equipa & Colaboradores (`/(admin)/team`) | Wave 4 | P1 (Alto) | ⚪ Planeado | Depende de `FE-010` |
+| **`FE-010`** | Catálogo de Serviços & Delegação de Especialistas | Wave 4 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/services` (KPIs, DTOs, busca/filtros, toggle ativo, `ServiceFormModal`, `AssignSpecialistsModal`, aviso sem especialistas) |
+| **`FE-011`** | Gestão de Equipa & Colaboradores (`/(admin)/team`) | Wave 4 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-010` |
 | **`FE-012`** | Agenda Diária Operacional (`/(admin)/schedule`) | Wave 5 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-011` |
 | **`FE-013`** | Disponibilidade: Abertura Mensal & Expediente Semanal | Wave 5 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-011` |
 | **`FE-014`** | Disponibilidade: Gestão de Ausências & Férias | Wave 5 | P1 (Alto) | ⚪ Planeado | Depende de `FE-013` |
@@ -198,7 +198,8 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - **✅ `FE-007` concluída** (Booking Wizard & recuperação 409).
    - **✅ `FE-008` concluída:** Portal do Cliente: Minhas Marcações & Avaliações (`/(customer)/my-bookings`).
    - **✅ `FE-009` concluída:** Onboarding do Salão: Cadastro do Negócio (`/(admin)/onboarding`).
-   - **🟡 Próximo passo imediato:** `FE-010` (Catálogo de Serviços & Delegação de Especialistas — `/(admin)/services`).
+   - **✅ `FE-010` concluída:** Catálogo de Serviços & Delegação de Especialistas (`/(admin)/services` com KPIs, tabela responsiva/cards mobile, `ServiceFormModal`, `AssignSpecialistsModal`, busca, filtros por categoria e aviso visual de serviços sem especialistas).
+   - **🟡 `FE-011` pronto para início:** Gestão de Equipa & Colaboradores (`/(admin)/team`).
 
 ---
 
