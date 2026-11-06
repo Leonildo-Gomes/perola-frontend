@@ -160,8 +160,8 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-008`** | Portal do Cliente: Minhas Marcações & Avaliações | Wave 3 | P2 (Médio) | 🟢 **Concluído & Validado** | `/(customer)/my-bookings` (abas Próximas/Histórico, Reagendar, Cancelar, Avaliar, WhatsApp) |
 | **`FE-009`** | Onboarding do Salão: Cadastro do Negócio (`businesses`) | Wave 4 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/onboarding` (Nome, Ilha→Concelho, Morada, Telefone +238, Live Preview, sync com `useTenantStore`) |
 | **`FE-010`** | Catálogo de Serviços & Delegação de Especialistas | Wave 4 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/services` (KPIs, DTOs, busca/filtros, toggle ativo, `ServiceFormModal`, `AssignSpecialistsModal`, aviso sem especialistas) |
-| **`FE-011`** | Gestão de Equipa & Colaboradores (`/(admin)/team`) | Wave 4 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-010` |
-| **`FE-012`** | Agenda Diária Operacional (`/(admin)/schedule`) | Wave 5 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-011` |
+| **`FE-011`** | Gestão de Equipa & Colaboradores (`/(admin)/team`) | Wave 4 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/team` (Bento KPIs, tabela/cards, `EmployeeCard`, `EmployeeFormModal`, `AssignEmployeeServicesModal`, badge Proprietário Principal, status ativo/inativo) |
+| **`FE-012`** | Agenda Diária Operacional (`/(admin)/schedule`) | Wave 5 | P0 (Crítico) | 🟡 **Pronto p/ Início** | Depende de `FE-011` |
 | **`FE-013`** | Disponibilidade: Abertura Mensal & Expediente Semanal | Wave 5 | P0 (Crítico) | ⚪ Planeado | Depende de `FE-011` |
 | **`FE-014`** | Disponibilidade: Gestão de Ausências & Férias | Wave 5 | P1 (Alto) | ⚪ Planeado | Depende de `FE-013` |
 | **`FE-015`** | Definições e Perfil do Salão (`/(admin)/settings`) | Wave 5 | P2 (Médio) | ⚪ Planeado | Depende de `FE-009` |
@@ -199,7 +199,8 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - **✅ `FE-008` concluída:** Portal do Cliente: Minhas Marcações & Avaliações (`/(customer)/my-bookings`).
    - **✅ `FE-009` concluída:** Onboarding do Salão: Cadastro do Negócio (`/(admin)/onboarding`).
    - **✅ `FE-010` concluída:** Catálogo de Serviços & Delegação de Especialistas (`/(admin)/services` com KPIs, tabela responsiva/cards mobile, `ServiceFormModal`, `AssignSpecialistsModal`, busca, filtros por categoria e aviso visual de serviços sem especialistas).
-   - **🟡 `FE-011` pronto para início:** Gestão de Equipa & Colaboradores (`/(admin)/team`).
+   - **✅ `FE-011` concluída:** Gestão de Equipa & Colaboradores (`/(admin)/team` com Bento KPIs, tabela responsiva/cards mobile, `EmployeeCard`, `EmployeeFormModal`, `AssignEmployeeServicesModal`, badge `Proprietário Principal`, status inativo esmaecido e validação +238).
+   - **🟡 `FE-012` pronto para início:** Agenda Diária Operacional do Salão (`/(admin)/schedule`).
 
 ---
 
