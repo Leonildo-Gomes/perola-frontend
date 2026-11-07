@@ -41,11 +41,14 @@ import type {
   SalonEmployeeSummary,
   SalonService,
   UpdateServicePayload,
-} from "@/types/service";
-import type { ServiceFormValues } from "@/lib/validations/service";
+} from "../types/service.types";
+import type { ServiceFormValues } from "../schemas/service.schema";
 import { AssignSpecialistsModal } from "./assign-specialists-modal";
 import { ServiceFormModal } from "./service-form-modal";
 import { ServiceListItem } from "./service-list-item";
+import { useServices } from "../hooks/use-services";
+import { serviceKeys } from "../queries/service.keys";
+import { useCreateService } from "../hooks/use-service-mutations";
 
 export function ServicesContainer() {
   const queryClient = useQueryClient();
@@ -64,15 +67,14 @@ export function ServicesContainer() {
   const [serviceToEdit, setServiceToEdit] = useState<SalonService | null>(null);
   const [serviceToDelegate, setServiceToDelegate] = useState<SalonService | null>(null);
   const [serviceToDelete, setServiceToDelete] = useState<SalonService | null>(null);
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useServices(businessId);
 
-  // Queries
-  const servicesQuery = useQuery({
-    queryKey: ["salon-services", businessId],
-    queryFn: ({ signal }) => getSalonServices(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 30_000,
-  });
-
+  const createServiceMutation = useCreateService(businessId);
   const employeesQuery = useQuery({
     queryKey: ["salon-employees", businessId],
     queryFn: ({ signal }) => getSalonEmployees(businessId, signal),
@@ -80,7 +82,7 @@ export function ServicesContainer() {
     staleTime: 60_000,
   });
 
-  const services = useMemo(() => servicesQuery.data ?? [], [servicesQuery.data]);
+  const services = useMemo(() => data ?? [], [data]);
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
 
   // Derived KPI metrics
@@ -146,22 +148,11 @@ export function ServicesContainer() {
   };
 
   // Mutations
-  const createServiceMutation = useMutation({
-    mutationFn: (payload: CreateServicePayload) => createSalonService(businessId, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
-      toast.success("Serviço criado com sucesso no catálogo!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao criar serviço.");
-    },
-  });
-
   const updateServiceMutation = useMutation({
     mutationFn: ({ serviceId, payload }: { serviceId: string; payload: UpdateServicePayload }) =>
       updateSalonService(businessId, serviceId, payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
+      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
       toast.success("Serviço atualizado com sucesso!");
     },
     onError: (err: unknown) => {
@@ -173,7 +164,7 @@ export function ServicesContainer() {
     mutationFn: ({ service, active }: { service: SalonService; active: boolean }) =>
       updateSalonService(businessId, service.id, { isActive: active }),
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
+      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
       toast.success(
         variables.active
           ? `Serviço "${variables.service.name}" ativado com sucesso.`
@@ -188,7 +179,7 @@ export function ServicesContainer() {
   const deleteServiceMutation = useMutation({
     mutationFn: (serviceId: string) => deleteSalonService(businessId, serviceId),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
+      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
       toast.success("Serviço removido com sucesso.");
       setServiceToDelete(null);
     },
@@ -214,14 +205,14 @@ export function ServicesContainer() {
           const currentList = emp.assignedServiceIds ?? [];
           const nextList = shouldHave
             ? [...currentList, serviceId]
-            : currentList.filter((id) => id !== serviceId);
+            : currentList.filter((id: string) => id !== serviceId);
           await setEmployeeServices(businessId, emp.id, nextList);
         }
       });
       await Promise.all(updates);
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
+      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
       void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
       toast.success("Especialistas atualizados para o serviço!");
     },
@@ -279,7 +270,7 @@ export function ServicesContainer() {
   };
 
   // 1. Loading State
-  if (servicesQuery.isLoading || employeesQuery.isLoading) {
+  if (isLoading || employeesQuery.isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex flex-col gap-2">
@@ -303,7 +294,7 @@ export function ServicesContainer() {
   }
 
   // 2. Error State
-  if (servicesQuery.isError) {
+  if (isError) {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-rose-200 bg-rose-50/50 p-8 text-center">
         <AlertTriangle className="h-10 w-10 text-rose-500 mb-3" />
@@ -315,7 +306,7 @@ export function ServicesContainer() {
         </p>
         <Button
           variant="outline"
-          onClick={() => servicesQuery.refetch()}
+          onClick={() => refetch()}
           className="mt-4 rounded-xl border-rose-200 bg-white text-rose-700 hover:bg-rose-50"
         >
           <RefreshCw className="mr-2 h-4 w-4" />
@@ -439,11 +430,10 @@ export function ServicesContainer() {
           <button
             type="button"
             onClick={() => setSelectedCategory("ALL")}
-            className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${
-              selectedCategory === "ALL"
-                ? "bg-teal-600 text-white shadow-sm"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
+            className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${selectedCategory === "ALL"
+              ? "bg-teal-600 text-white shadow-sm"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
           >
             Todos ({categoryCounts.ALL || 0})
           </button>
@@ -463,11 +453,10 @@ export function ServicesContainer() {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${
-                  selectedCategory === cat
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
+                className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${selectedCategory === cat
+                  ? "bg-teal-600 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
               >
                 {labels[cat] || cat} ({count})
               </button>

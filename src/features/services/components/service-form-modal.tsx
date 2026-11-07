@@ -24,11 +24,11 @@ import {
 import {
   SERVICE_CATEGORIES,
   type SalonService,
-} from "@/types/service";
+} from "../types/service.types";
 import {
   serviceFormSchema,
   type ServiceFormValues,
-} from "@/lib/validations/service";
+} from "../schemas/service.schema";
 
 const DURATION_OPTIONS = [
   { value: "15", label: "15 min" },

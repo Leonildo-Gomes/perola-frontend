@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import type { SalonEmployeeSummary, SalonService } from "@/types/service";
+import type { SalonEmployeeSummary, SalonService } from "../types/service.types";
 
 interface AssignSpecialistsModalProps {
   open: boolean;

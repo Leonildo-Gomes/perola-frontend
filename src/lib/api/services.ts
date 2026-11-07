@@ -3,7 +3,7 @@ import type {
   SalonEmployeeSummary,
   SalonService,
   UpdateServicePayload,
-} from "@/types/service";
+} from "@/features/services/types/service.types";
 import { api } from "./client";
 
 /**

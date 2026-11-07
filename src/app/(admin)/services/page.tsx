@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ServicesContainer } from "@/components/admin/services/services-container";
+import { ServicesContainer } from "@/features/services/components";
 
 export const metadata: Metadata = {
   title: "Catálogo de Serviços | Painel do Salão Pérola",
