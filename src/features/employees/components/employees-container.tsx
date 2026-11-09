@@ -37,7 +37,7 @@ import { useEmployees } from "../hooks/use-employees";
 import {
   useCreateEmployee,
   useDeleteEmployee,
-  useToggleEmployeeActive,
+  useChangeEmployeeStatus,
   useUpdateEmployee,
   useUpdateEmployeeServices,
 } from "../hooks/use-employee-mutations";
@@ -129,7 +129,7 @@ export function EmployeesContainer() {
   // Mutations
   const createEmployeeMutation = useCreateEmployee(businessId);
   const updateEmployeeMutation = useUpdateEmployee(businessId);
-  const toggleActiveMutation = useToggleEmployeeActive(businessId);
+  const toggleActiveMutation = useChangeEmployeeStatus(businessId);
   const deleteEmployeeMutation = useDeleteEmployee(businessId);
   const updateServicesMutation = useUpdateEmployeeServices(businessId);
 
@@ -169,8 +169,8 @@ export function EmployeesContainer() {
     }
   };
 
-  const handleToggleActive = (employee: Employee, active: boolean) => {
-    toggleActiveMutation.mutate({ employeeId: employee.id, active });
+  const handleToggleActive = (employee: Employee) => {
+    toggleActiveMutation.mutate(employee.id);
   };
 
   const handleSaveAssignedServices = async (employeeId: string, serviceIds: string[]) => {

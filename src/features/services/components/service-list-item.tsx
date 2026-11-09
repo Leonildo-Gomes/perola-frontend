@@ -17,7 +17,7 @@ import type { SalonEmployeeSummary, SalonService } from "../types/service.types"
 interface ServiceListItemProps {
   service: SalonService;
   assignedEmployees: SalonEmployeeSummary[];
-  onToggleActive: (service: SalonService, active: boolean) => void;
+  onToggleActive: (service: SalonService) => void;
   onEdit: (service: SalonService) => void;
   onDelete: (service: SalonService) => void;
   onAssignSpecialists: (service: SalonService) => void;
@@ -60,7 +60,7 @@ export function ServiceListItem({
               id={`switch-mobile-${service.id}`}
               checked={service.isActive}
               disabled={isPending}
-              onCheckedChange={(checked) => onToggleActive(service, checked)}
+              onCheckedChange={() => onToggleActive(service)}
               aria-label={`Ativar ou desativar serviço ${service.name}`}
             />
           </div>
@@ -228,7 +228,7 @@ export function ServiceListItem({
               id={`switch-desktop-${service.id}`}
               checked={service.isActive}
               disabled={isPending}
-              onCheckedChange={(checked) => onToggleActive(service, checked)}
+              onCheckedChange={() => onToggleActive(service)}
               aria-label={`Ativar ou desativar serviço ${service.name}`}
             />
             <span className="text-xs font-medium text-slate-500">

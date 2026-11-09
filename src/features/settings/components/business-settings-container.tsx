@@ -38,7 +38,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
 import type { BusinessResponse } from "../types/settings.types";
 import { useBusinessSettings } from "../hooks/use-settings";
-import { useUpdateBusinessSettings } from "../hooks/use-settings-mutations";
+import { useChangeBusinessStatus, useUpdateBusinessSettings } from "../hooks/use-settings-mutations";
 
 export function BusinessSettingsContainer() {
   const user = useAuthStore((s) => s.user);
@@ -108,8 +108,11 @@ export function BusinessSettingsContainer() {
     }
   }, [selectedIsland, availableCities, setValue, watch]);
 
-  // Mutation to update business
+  // Mutation to update business and mutation to toggle status
   const updateMutation = useUpdateBusinessSettings(businessId);
+  const toggleStatusMutation = useChangeBusinessStatus(businessId);
+
+  const isBusinessActive = business?.isActive ?? isActive;
 
   const onSubmit = async (data: UpdateBusinessFormValues) => {
     const updated = await updateMutation.mutateAsync({
@@ -241,9 +244,9 @@ export function BusinessSettingsContainer() {
         {/* Form Column */}
         <div className="lg:col-span-7">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* 1. Status de Visibilidade Pública (Switch) */}
+            {/* 1. Status de Visibilidade Pública (Switch com Ação Imediata) */}
             <div
-              className={`p-5 rounded-2xl border transition-all ${isActive
+              className={`p-5 rounded-2xl border transition-all ${isBusinessActive
                   ? "bg-emerald-50/40 border-emerald-200 shadow-2xs"
                   : "bg-amber-50/40 border-amber-200 shadow-2xs"
                 }`}
@@ -251,7 +254,7 @@ export function BusinessSettingsContainer() {
               <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    {isActive ? (
+                    {isBusinessActive ? (
                       <Eye className="w-5 h-5 text-emerald-600" />
                     ) : (
                       <EyeOff className="w-5 h-5 text-amber-600" />
@@ -261,7 +264,7 @@ export function BusinessSettingsContainer() {
                     </h3>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    {isActive
+                    {isBusinessActive
                       ? "O salão está ATIVO e visível a clientes de Cabo Verde para agendamentos online."
                       : "O salão está PAUSADO. Não aparecerá no feed de pesquisa e novos agendamentos ficam suspensos."}
                   </p>
@@ -269,11 +272,11 @@ export function BusinessSettingsContainer() {
 
                 <div className="flex items-center gap-2 shrink-0">
                   <Switch
-                    checked={isActive}
-                    onCheckedChange={(checked) =>
-                      setValue("isActive", checked, { shouldDirty: true })
-                    }
+                    checked={isBusinessActive}
+                    disabled={toggleStatusMutation.isPending}
+                    onCheckedChange={() => toggleStatusMutation.mutate()}
                     className="data-[state=checked]:bg-emerald-600"
+                    aria-label="Alternar visibilidade pública do salão"
                   />
                 </div>
               </div>

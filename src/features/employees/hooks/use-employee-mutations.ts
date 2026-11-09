@@ -7,6 +7,7 @@ import {
   updateEmployee,
   deleteEmployee,
   updateEmployeeServices,
+  changeEmployeeStatus,
 } from "../api/employee.api";
 import { employeeKeys } from "../queries/employee.keys";
 import { serviceKeys } from "@/features/services/queries/service.keys";
@@ -53,6 +54,24 @@ export function useUpdateEmployee(businessId: string) {
     onError: (err: unknown) => {
       toast.error(
         err instanceof Error ? err.message : "Erro ao atualizar dados do colaborador.",
+      );
+    },
+  });
+}
+
+export function useChangeEmployeeStatus(businessId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (employeeId: string) => changeEmployeeStatus(businessId, employeeId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: employeeKeys.list(businessId) });
+      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
+      toast.success("Status do colaborador alterado com sucesso!");
+    },
+    onError: (err: unknown) => {
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao alterar status do colaborador.",
       );
     },
   });

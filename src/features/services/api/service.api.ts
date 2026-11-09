@@ -52,6 +52,15 @@ export async function deleteService(
     });
 }
 
+export async function changeServiceStatus(
+    businessId: string,
+    serviceId: string,
+): Promise<void> {
+    return api.post(`/api/v1/businesses/${businessId}/services/${serviceId}/status`, {
+        tenant: true,
+    });
+}
+
 // Aliases for salon service operations
 export { getServices as getSalonServices };
 export { createService as createSalonService };
@@ -60,7 +69,7 @@ export { deleteService as deleteSalonService };
 
 // Cross-feature re-exports needed by service assignment container
 export {
-  getEmployees as getSalonEmployees,
-  getEmployeeServices,
-  setEmployeeServices,
+    getEmployees as getSalonEmployees,
+    getEmployeeServices,
+    setEmployeeServices,
 } from "@/features/employees/api/employee.api";

@@ -48,7 +48,7 @@ import { ServiceFormModal } from "./service-form-modal";
 import { ServiceListItem } from "./service-list-item";
 import { useServices } from "../hooks/use-services";
 import { serviceKeys } from "../queries/service.keys";
-import { useCreateService, useUpdateService } from "../hooks/use-service-mutations";
+import { useChangeServiceStatus, useCreateService, useUpdateService } from "../hooks/use-service-mutations";
 import { useEmployees } from "@/features/employees/hooks/use-employees";
 import { employeeKeys } from "@/features/employees/queries/employee.keys";
 
@@ -144,35 +144,8 @@ export function ServicesContainer() {
     });
   };
 
-  // Mutations
-  /*const updateServiceMutation = useMutation({
-    mutationFn: ({ serviceId, payload }: { serviceId: string; payload: UpdateServicePayload }) =>
-      updateSalonService(businessId, serviceId, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
-      toast.success("Serviço atualizado com sucesso!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao atualizar serviço.");
-    },
-  });*/
   const updateServiceMutation = useUpdateService(businessId)
-
-  const toggleActiveMutation = useMutation({
-    mutationFn: ({ service, active }: { service: SalonService; active: boolean }) =>
-      updateSalonService(businessId, service.id, { isActive: active }),
-    onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
-      toast.success(
-        variables.active
-          ? `Serviço "${variables.service.name}" ativado com sucesso.`
-          : `Serviço "${variables.service.name}" desativado.`
-      );
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao alterar estado do serviço.");
-    },
-  });
+  const toggleActiveMutation = useChangeServiceStatus(businessId)
 
   const deleteServiceMutation = useMutation({
     mutationFn: (serviceId: string) => deleteSalonService(businessId, serviceId),
@@ -253,8 +226,8 @@ export function ServicesContainer() {
     }
   };
 
-  const handleToggleActive = (service: SalonService, active: boolean) => {
-    toggleActiveMutation.mutate({ service, active });
+  const handleToggleActive = (service: SalonService) => {
+    toggleActiveMutation.mutate(service.id);
   };
 
   const handleSaveDelegation = async (serviceId: string, assignedEmployeeIds: string[]) => {

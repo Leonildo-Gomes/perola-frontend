@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createService, updateService, deleteService } from "../api/service.api";
+import { createService, updateService, deleteService, changeServiceStatus } from "../api/service.api";
 import { serviceKeys } from "../queries/service.keys";
 import type { CreateServicePayload, UpdateServicePayload } from "../types/service.types";
 
@@ -47,6 +47,21 @@ export function useDeleteService(businessId: string, serviceId: string) {
         },
         onError: (err: unknown) => {
             toast.error(err instanceof Error ? err.message : "Erro ao excluir serviço.");
+        },
+    });
+}
+
+export function useChangeServiceStatus(businessId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (serviceId: string) => changeServiceStatus(businessId, serviceId),
+        onSuccess: () => {
+            void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
+            toast.success("Status do serviço alterado com sucesso!");
+        },
+        onError: (err: unknown) => {
+            toast.error(err instanceof Error ? err.message : "Erro ao alterar status do serviço.");
         },
     });
 }

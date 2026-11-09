@@ -34,7 +34,7 @@ interface EmployeeCardProps {
   employee: Employee;
   services: SalonService[];
   isCurrentOwner?: boolean;
-  onToggleActive: (employee: Employee, active: boolean) => void;
+  onToggleActive: (employee: Employee) => void;
   onEdit: (employee: Employee) => void;
   onManageServices: (employee: Employee) => void;
   onDelete: (employee: Employee) => void;
@@ -117,7 +117,7 @@ export function EmployeeCard({
               id={`switch-mobile-${employee.id}`}
               checked={employee.isActive}
               disabled={isPending}
-              onCheckedChange={(checked) => onToggleActive(employee, checked)}
+              onCheckedChange={() => onToggleActive(employee)}
               aria-label={`Ativar ou desativar colaborador ${employee.displayName}`}
             />
           </div>
@@ -365,7 +365,7 @@ export function EmployeeCard({
               id={`switch-desktop-${employee.id}`}
               checked={employee.isActive}
               disabled={isPending}
-              onCheckedChange={(checked) => onToggleActive(employee, checked)}
+              onCheckedChange={() => onToggleActive(employee)}
               aria-label={`Ativar ou desativar colaborador ${employee.displayName}`}
             />
             <span

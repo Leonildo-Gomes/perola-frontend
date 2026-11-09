@@ -98,6 +98,20 @@ export async function deleteEmployee(
 }
 
 /**
+ * Change or toggle employee active status (`POST /api/v1/businesses/{id}/employees/{empId}/status`).
+ */
+export async function changeEmployeeStatus(
+  businessId: string,
+  employeeId: string,
+): Promise<void> {
+  return api.post<void>(
+    `/api/v1/businesses/${businessId}/employees/${employeeId}/status`,
+    undefined,
+    { tenant: true },
+  );
+}
+
+/**
  * Get service IDs assigned to an employee (`GET /api/v1/businesses/{id}/employees/{empId}/services`).
  */
 export async function getEmployeeAssignedServices(

@@ -46,3 +46,16 @@ export async function updateBusiness(
   );
 }
 
+/**
+ * Change or toggle business visibility status (`POST /api/v1/businesses/{id}/status`).
+ */
+export async function changeBusinessStatus(
+  businessId: string,
+): Promise<void> {
+  return api.post<void>(
+    `/api/v1/businesses/${businessId}/status`,
+    undefined,
+    { tenant: true },
+  );
+}
+
