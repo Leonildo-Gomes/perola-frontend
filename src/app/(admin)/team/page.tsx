@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TeamContainer } from "@/components/admin/team/team-container";
+import { EmployeesContainer } from "@/features/employees/components";
 
 export const metadata: Metadata = {
   title: "Gestão da Equipa & Colaboradores | Painel do Salão Pérola",
@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default function AdminTeamPage() {
-  return <TeamContainer />;
+  return <EmployeesContainer />;
 }
 

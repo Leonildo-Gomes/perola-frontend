@@ -29,30 +29,26 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  createEmployee,
-  deleteEmployee,
-  getEmployees,
-  updateEmployee,
-  updateEmployeeServices,
-} from "@/lib/api/employees";
-import { getSalonServices } from "@/lib/api/services";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
-import type {
-  CreateEmployeePayload,
-  Employee,
-  UpdateEmployeePayload,
-} from "@/types/employee";
-import type { EmployeeFormValues } from "@/lib/validations/employee";
+import type { Employee } from "../types/employee.types";
+import type { EmployeeFormValues } from "../schemas/employee.schema";
+import { useEmployees } from "../hooks/use-employees";
+import {
+  useCreateEmployee,
+  useDeleteEmployee,
+  useToggleEmployeeActive,
+  useUpdateEmployee,
+  useUpdateEmployeeServices,
+} from "../hooks/use-employee-mutations";
+import { useServices } from "@/features/services/hooks/use-services";
 import { AssignEmployeeServicesModal } from "./assign-employee-services-modal";
 import { EmployeeCard } from "./employee-card";
 import { EmployeeFormModal } from "./employee-form-modal";
 
 type TabFilter = "ALL" | "OWNERS" | "STAFF";
 
-export function TeamContainer() {
-  const queryClient = useQueryClient();
+export function EmployeesContainer() {
   const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
   const activeTenantId = useTenantStore((s) => s.activeBusinessId);
@@ -72,19 +68,8 @@ export function TeamContainer() {
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
 
   // Queries
-  const employeesQuery = useQuery({
-    queryKey: ["salon-employees", businessId],
-    queryFn: ({ signal }) => getEmployees(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 30_000,
-  });
-
-  const servicesQuery = useQuery({
-    queryKey: ["salon-services", businessId],
-    queryFn: ({ signal }) => getSalonServices(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  const employeesQuery = useEmployees(businessId);
+  const servicesQuery = useServices(businessId);
 
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
   const services = useMemo(() => servicesQuery.data ?? [], [servicesQuery.data]);
@@ -142,76 +127,11 @@ export function TeamContainer() {
   }, [employees, activeTab, searchQuery, user?.id]);
 
   // Mutations
-  const createEmployeeMutation = useMutation({
-    mutationFn: (payload: CreateEmployeePayload) => createEmployee(businessId, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
-      toast.success("Colaborador adicionado à equipa com sucesso!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao adicionar colaborador.");
-    },
-  });
-
-  const updateEmployeeMutation = useMutation({
-    mutationFn: ({
-      employeeId,
-      payload,
-    }: {
-      employeeId: string;
-      payload: UpdateEmployeePayload;
-    }) => updateEmployee(businessId, employeeId, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
-      toast.success("Dados do colaborador atualizados!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao atualizar colaborador.");
-    },
-  });
-
-  const toggleActiveMutation = useMutation({
-    mutationFn: ({ employee, active }: { employee: Employee; active: boolean }) =>
-      updateEmployee(businessId, employee.id, { isActive: active }),
-    onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
-      toast.success(
-        variables.active
-          ? `Colaborador "${variables.employee.displayName}" ativado na equipa.`
-          : `Colaborador "${variables.employee.displayName}" desativado.`
-      );
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao alterar estado do colaborador.");
-    },
-  });
-
-  const deleteEmployeeMutation = useMutation({
-    mutationFn: (employeeId: string) => deleteEmployee(businessId, employeeId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
-      toast.success("Colaborador removido com sucesso.");
-      setEmployeeToDelete(null);
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao remover colaborador.");
-    },
-  });
-
-  const updateServicesMutation = useMutation({
-    mutationFn: ({ employeeId, serviceIds }: { employeeId: string; serviceIds: string[] }) =>
-      updateEmployeeServices(businessId, employeeId, serviceIds),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
-      void queryClient.invalidateQueries({ queryKey: ["salon-services", businessId] });
-      toast.success("Serviços atualizados com sucesso para o colaborador!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao atualizar serviços.");
-    },
-  });
+  const createEmployeeMutation = useCreateEmployee(businessId);
+  const updateEmployeeMutation = useUpdateEmployee(businessId);
+  const toggleActiveMutation = useToggleEmployeeActive(businessId);
+  const deleteEmployeeMutation = useDeleteEmployee(businessId);
+  const updateServicesMutation = useUpdateEmployeeServices(businessId);
 
   // Handlers
   const handleOpenCreateModal = () => {
@@ -250,7 +170,7 @@ export function TeamContainer() {
   };
 
   const handleToggleActive = (employee: Employee, active: boolean) => {
-    toggleActiveMutation.mutate({ employee, active });
+    toggleActiveMutation.mutate({ employeeId: employee.id, active });
   };
 
   const handleSaveAssignedServices = async (employeeId: string, serviceIds: string[]) => {
@@ -260,6 +180,7 @@ export function TeamContainer() {
   const handleConfirmDelete = async () => {
     if (employeeToDelete) {
       await deleteEmployeeMutation.mutateAsync(employeeToDelete.id);
+      setEmployeeToDelete(null);
     }
   };
 
@@ -430,33 +351,30 @@ export function TeamContainer() {
           <button
             type="button"
             onClick={() => setActiveTab("ALL")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
-              activeTab === "ALL"
-                ? "bg-teal-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${activeTab === "ALL"
+              ? "bg-teal-600 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+              }`}
           >
             Todos os Membros ({tabCounts.ALL})
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("OWNERS")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
-              activeTab === "OWNERS"
-                ? "bg-teal-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${activeTab === "OWNERS"
+              ? "bg-teal-600 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+              }`}
           >
             Proprietários ({tabCounts.OWNERS})
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("STAFF")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
-              activeTab === "STAFF"
-                ? "bg-teal-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${activeTab === "STAFF"
+              ? "bg-teal-600 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+              }`}
           >
             Funcionários ({tabCounts.STAFF})
           </button>
@@ -657,4 +575,6 @@ export function TeamContainer() {
     </div>
   );
 }
+
+export const TeamContainer = EmployeesContainer;
 

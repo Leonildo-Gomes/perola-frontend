@@ -21,11 +21,11 @@ export function useCreateService(businessId: string) {
     });
 }
 
-export function useUpdateService(businessId: string, serviceId: string) {
+export function useUpdateService(businessId: string) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: UpdateServicePayload) => updateService(businessId, serviceId, data),
+        mutationFn: (data: { serviceId: string, payload: UpdateServicePayload }) => updateService(businessId, data.serviceId, data.payload),
         onSuccess: () => {
             void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
             toast.success("Serviço atualizado com sucesso no catálogo!");

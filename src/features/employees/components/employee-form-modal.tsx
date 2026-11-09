@@ -15,12 +15,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { formatCurrency, formatDuration } from "@/lib/utils";
-import type { Employee } from "@/types/employee";
-import type { SalonService } from "@/types/service";
+import type { Employee } from "../types/employee.types";
+import type { SalonService } from "@/features/services/types/service.types";
 import {
   employeeFormSchema,
   type EmployeeFormValues,
-} from "@/lib/validations/employee";
+} from "../schemas/employee.schema";
 
 interface EmployeeFormModalProps {
   open: boolean;
@@ -235,11 +235,10 @@ export function EmployeeFormModal({
               <button
                 type="button"
                 onClick={() => setValue("accessRole", "EMPLOYEE")}
-                className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors ${
-                  selectedAccessRole === "EMPLOYEE"
+                className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors ${selectedAccessRole === "EMPLOYEE"
                     ? "border-teal-600 bg-teal-50/50 ring-1 ring-teal-600"
                     : "border-slate-200 bg-white hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 <User className="h-4 w-4 text-teal-700 mt-0.5 shrink-0" />
                 <div>
@@ -255,11 +254,10 @@ export function EmployeeFormModal({
               <button
                 type="button"
                 onClick={() => setValue("accessRole", "OWNER")}
-                className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors ${
-                  selectedAccessRole === "OWNER"
+                className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors ${selectedAccessRole === "OWNER"
                     ? "border-teal-600 bg-teal-50/50 ring-1 ring-teal-600"
                     : "border-slate-200 bg-white hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 <Shield className="h-4 w-4 text-teal-700 mt-0.5 shrink-0" />
                 <div>
@@ -297,19 +295,17 @@ export function EmployeeFormModal({
                     <label
                       key={service.id}
                       onClick={() => toggleService(service.id)}
-                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
-                        isChecked
+                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isChecked
                           ? "bg-teal-50/80 border border-teal-200"
                           : "bg-white border border-slate-100 hover:bg-slate-50"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <div
-                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-                            isChecked
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${isChecked
                               ? "bg-teal-600 border-teal-600 text-white"
                               : "border-slate-300 bg-white"
-                          }`}
+                            }`}
                         >
                           {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
                         </div>

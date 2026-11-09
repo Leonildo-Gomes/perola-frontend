@@ -12,8 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatCurrency, formatDuration } from "@/lib/utils";
-import type { Employee } from "@/types/employee";
-import type { SalonService } from "@/types/service";
+import type { Employee } from "../types/employee.types";
+import type { SalonService } from "@/features/services/types/service.types";
 
 interface AssignEmployeeServicesModalProps {
   open: boolean;

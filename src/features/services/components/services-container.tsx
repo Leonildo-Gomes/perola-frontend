@@ -48,7 +48,9 @@ import { ServiceFormModal } from "./service-form-modal";
 import { ServiceListItem } from "./service-list-item";
 import { useServices } from "../hooks/use-services";
 import { serviceKeys } from "../queries/service.keys";
-import { useCreateService } from "../hooks/use-service-mutations";
+import { useCreateService, useUpdateService } from "../hooks/use-service-mutations";
+import { useEmployees } from "@/features/employees/hooks/use-employees";
+import { employeeKeys } from "@/features/employees/queries/employee.keys";
 
 export function ServicesContainer() {
   const queryClient = useQueryClient();
@@ -75,12 +77,7 @@ export function ServicesContainer() {
   } = useServices(businessId);
 
   const createServiceMutation = useCreateService(businessId);
-  const employeesQuery = useQuery({
-    queryKey: ["salon-employees", businessId],
-    queryFn: ({ signal }) => getSalonEmployees(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  const employeesQuery = useEmployees(businessId);
 
   const services = useMemo(() => data ?? [], [data]);
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
@@ -148,7 +145,7 @@ export function ServicesContainer() {
   };
 
   // Mutations
-  const updateServiceMutation = useMutation({
+  /*const updateServiceMutation = useMutation({
     mutationFn: ({ serviceId, payload }: { serviceId: string; payload: UpdateServicePayload }) =>
       updateSalonService(businessId, serviceId, payload),
     onSuccess: () => {
@@ -158,7 +155,8 @@ export function ServicesContainer() {
     onError: (err: unknown) => {
       toast.error(err instanceof Error ? err.message : "Erro ao atualizar serviço.");
     },
-  });
+  });*/
+  const updateServiceMutation = useUpdateService(businessId)
 
   const toggleActiveMutation = useMutation({
     mutationFn: ({ service, active }: { service: SalonService; active: boolean }) =>
@@ -213,7 +211,7 @@ export function ServicesContainer() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: serviceKeys.list(businessId) });
-      void queryClient.invalidateQueries({ queryKey: ["salon-employees", businessId] });
+      void queryClient.invalidateQueries({ queryKey: employeeKeys.list(businessId) });
       toast.success("Especialistas atualizados para o serviço!");
     },
     onError: (err: unknown) => {
