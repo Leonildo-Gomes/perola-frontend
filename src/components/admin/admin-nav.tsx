@@ -23,7 +23,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/schedule", label: "Agenda", icon: CalendarDays },
   { href: "/services", label: "Serviços", icon: Scissors },
-  { href: "/team", label: "Equipa", icon: Users },
+  { href: "/employee", label: "Equipa", icon: Users },
   { href: "/availability", label: "Disponibilidade", icon: CalendarRange },
   { href: "/settings", label: "Definições", icon: Settings },
 ];
