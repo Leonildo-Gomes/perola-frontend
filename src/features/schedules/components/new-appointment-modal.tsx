@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CV_PHONE_REGEX } from "@/lib/validations/auth";
+import { CV_PHONE_REGEX } from "@/features/auth/schemas/auth.schema";
 import { formatCurrency, formatDuration } from "@/lib/utils";
 import type { Employee } from "@/features/employees/types/employee.types";
 import type { SalonService } from "@/features/services/types/service.types";

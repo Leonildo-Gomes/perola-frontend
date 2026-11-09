@@ -51,3 +51,16 @@ export async function deleteService(
         tenant: true,
     });
 }
+
+// Aliases for salon service operations
+export { getServices as getSalonServices };
+export { createService as createSalonService };
+export { updateService as updateSalonService };
+export { deleteService as deleteSalonService };
+
+// Cross-feature re-exports needed by service assignment container
+export {
+  getEmployees as getSalonEmployees,
+  getEmployeeServices,
+  setEmployeeServices,
+} from "@/features/employees/api/employee.api";

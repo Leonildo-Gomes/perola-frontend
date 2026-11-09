@@ -16,14 +16,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { PhoneInputCV } from "@/components/auth/phone-input-cv";
+import { PhoneInputCV } from "@/features/auth/components";
 import { Button } from "@/components/ui/button";
-import { createBusiness } from "@/lib/api/business";
+import { createBusiness } from "@/features/settings/api/settings.api";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/geography";
 import {
   type CreateBusinessFormValues,
   createBusinessSchema,
-} from "@/lib/validations/business";
+} from "@/features/settings/schemas/settings.schema";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
 import { BusinessPreviewCard } from "./business-preview-card";

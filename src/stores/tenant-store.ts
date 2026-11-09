@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { getQueryClient } from "@/lib/query-client";
-import type { BusinessRole } from "@/types/auth";
+import type { BusinessRole } from "@/features/auth/types/auth.types";
 
 interface TenantState {
   activeBusinessId: string | null;

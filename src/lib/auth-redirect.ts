@@ -1,4 +1,4 @@
-import type { AuthResponse } from "@/types/auth";
+import type { AuthResponse } from "@/features/auth/types/auth.types";
 
 /** Accept only same-origin relative paths (prevents open redirects). */
 export function safeReturnUrl(url: string | null | undefined): string | null {

@@ -134,3 +134,8 @@ export async function updateEmployeeServices(
   );
 }
 
+export {
+  getEmployeeAssignedServices as getEmployeeServices,
+  updateEmployeeServices as setEmployeeServices,
+};
+

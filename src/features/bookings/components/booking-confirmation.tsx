@@ -4,7 +4,7 @@ import { AlertTriangle, CalendarCheck, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { AppointmentStatusBadge } from "@/components/appointments/appointment-status-badge";
+import { AppointmentStatusBadge } from "@/features/customers/components";
 import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

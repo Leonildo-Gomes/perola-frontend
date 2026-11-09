@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CV_PHONE_REGEX } from "@/lib/validations/auth";
+import { CV_PHONE_REGEX } from "@/features/auth/schemas/auth.schema";
 
 export const employeeFormSchema = z.object({
   displayName: z

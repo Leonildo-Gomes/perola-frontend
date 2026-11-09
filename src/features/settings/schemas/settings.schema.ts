@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ISLANDS } from "@/lib/geography";
-import { CV_PHONE_REGEX } from "@/lib/validations/auth";
+import { CV_PHONE_REGEX } from "@/features/auth/schemas/auth.schema";
 
 export const createBusinessSchema = z.object({
   name: z

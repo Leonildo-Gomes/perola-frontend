@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PhoneInputCV } from "@/components/auth/phone-input-cv";
+import { PhoneInputCV } from "@/features/auth/components";
 import { BusinessPreviewCard } from "@/components/admin/onboarding/business-preview-card";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/geography";
 import {

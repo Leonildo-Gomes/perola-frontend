@@ -1,4 +1,4 @@
-import type { MarketplaceService } from "@/types/marketplace";
+import type { MarketplaceService } from "@/features/marketplace/types/marketplace.types";
 
 export interface PublicEmployee {
   id: string;

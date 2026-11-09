@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/client";
 import type { Page } from "@/types/api";
-import type { MarketplaceService } from "@/types/marketplace";
+import type { MarketplaceService } from "@/features/marketplace/types/marketplace.types";
 import type {
   AppointmentResponse,
   AvailabilitySlotsResponse,
