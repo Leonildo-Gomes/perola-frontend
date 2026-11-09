@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Coffee, Plus, Sparkles, User } from "lucide-react";
 import { cvDateKey, formatTime } from "@/lib/datetime";
 import { cn, formatCurrency } from "@/lib/utils";
-import type { SalonAppointment } from "@/types/appointments";
-import type { Employee } from "@/types/employee";
+import type { SalonAppointment } from "../types/schedule.types";
+import type { Employee } from "@/features/employees/types/employee.types";
 import { AppointmentBlock } from "./appointment-block";
 
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];

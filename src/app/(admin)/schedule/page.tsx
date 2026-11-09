@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ScheduleContainer } from "@/components/admin/schedule/schedule-container";
+import { ScheduleContainer } from "@/features/schedules/components";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {

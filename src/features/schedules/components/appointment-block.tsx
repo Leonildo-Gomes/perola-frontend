@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatTime } from "@/lib/datetime";
 import { cn, formatCurrency, formatDuration } from "@/lib/utils";
-import type { SalonAppointment } from "@/types/appointments";
+import type { SalonAppointment } from "../types/schedule.types";
 
 interface AppointmentBlockProps {
   appointment: SalonAppointment;

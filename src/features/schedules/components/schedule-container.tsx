@@ -28,29 +28,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  acceptReschedule,
-  cancelSalonAppointment,
-  completeAppointment,
-  confirmAppointment,
-  getSalonAppointments,
-  rejectReschedule,
-} from "@/lib/api/appointments";
-import { getEmployees } from "@/lib/api/employees";
-import { getSalonServices } from "@/lib/api/services";
-import { api } from "@/lib/api/client";
 import { addDaysToKey, cvDateKey, formatDateHeader } from "@/lib/datetime";
 import { formatCurrency } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
-import type { SalonAppointment } from "@/types/appointments";
+import type { SalonAppointment } from "../types/schedule.types";
+import { useSalonAppointments } from "../hooks/use-schedules";
+import {
+  useAcceptReschedule,
+  useCancelSalonAppointment,
+  useCompleteAppointment,
+  useConfirmAppointment,
+  useCreateSalonAppointment,
+  useRejectReschedule,
+} from "../hooks/use-schedule-mutations";
+import { useEmployees } from "@/features/employees/hooks/use-employees";
+import { useServices } from "@/features/services/hooks/use-services";
 import { NewAppointmentModal } from "./new-appointment-modal";
 import { ScheduleTimeline } from "./schedule-timeline";
 
 type ViewMode = "DAY" | "WEEK" | "MONTH";
 
 export function ScheduleContainer() {
-  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
@@ -81,34 +80,13 @@ export function ScheduleContainer() {
   const handleToday = () => setDateKey(cvDateKey());
 
   // Queries
-  const appointmentsQuery = useQuery({
-    queryKey: ["salon-appointments", businessId, dateKey],
-    queryFn: ({ signal }) =>
-      getSalonAppointments(
-        {
-          date: dateKey,
-          employeeId: selectedEmployeeId !== "ALL" ? selectedEmployeeId : undefined,
-        },
-        signal,
-      ),
-    enabled: Boolean(businessId),
-    staleTime: 10_000, // 10 seconds for operational real-time schedule
-    refetchInterval: 30_000,
+  const appointmentsQuery = useSalonAppointments(businessId, {
+    date: dateKey,
+    employeeId: selectedEmployeeId !== "ALL" ? selectedEmployeeId : undefined,
   });
 
-  const employeesQuery = useQuery({
-    queryKey: ["salon-employees", businessId],
-    queryFn: ({ signal }) => getEmployees(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
-
-  const servicesQuery = useQuery({
-    queryKey: ["salon-services", businessId],
-    queryFn: ({ signal }) => getSalonServices(businessId, signal),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  const employeesQuery = useEmployees(businessId);
+  const servicesQuery = useServices(businessId);
 
   const appointments = useMemo(() => appointmentsQuery.data ?? [], [appointmentsQuery.data]);
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
@@ -141,88 +119,12 @@ export function ScheduleContainer() {
   }, [appointments, searchQuery]);
 
   // Mutations
-  const confirmMutation = useMutation({
-    mutationFn: (appointmentId: string) => confirmAppointment(appointmentId),
-    onSuccess: (updated) => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success(`Agendamento de ${updated.customerName || "cliente"} confirmado!`);
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao confirmar agendamento.");
-    },
-  });
-
-  const completeMutation = useMutation({
-    mutationFn: (appointmentId: string) => completeAppointment(appointmentId),
-    onSuccess: (updated) => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success(`Atendimento de ${updated.customerName || "cliente"} marcado como concluído!`);
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao concluir atendimento.");
-    },
-  });
-
-  const cancelMutation = useMutation({
-    mutationFn: (appointmentId: string) => cancelSalonAppointment(appointmentId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success("Agendamento cancelado.");
-      setAppointmentToCancel(null);
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao cancelar agendamento.");
-    },
-  });
-
-  const acceptRescheduleMutation = useMutation({
-    mutationFn: (appointmentId: string) => acceptReschedule(appointmentId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success("Novo horário aceito com sucesso!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao aceitar reagendamento.");
-    },
-  });
-
-  const rejectRescheduleMutation = useMutation({
-    mutationFn: (appointmentId: string) => rejectReschedule(appointmentId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success("Proposta de reagendamento rejeitada.");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao rejeitar reagendamento.");
-    },
-  });
-
-  const createAppointmentMutation = useMutation({
-    mutationFn: async (payload: {
-      customerName: string;
-      customerPhone: string;
-      employeeId: string;
-      serviceId: string;
-      startTime: string;
-      notes?: string;
-    }) => {
-      return api.post<SalonAppointment>(
-        "/api/v1/appointments",
-        {
-          businessId,
-          ...payload,
-        },
-        { tenant: true },
-      );
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["salon-appointments"] });
-      toast.success("Agendamento criado com sucesso na agenda!");
-    },
-    onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Erro ao criar agendamento.");
-    },
-  });
+  const confirmMutation = useConfirmAppointment(businessId);
+  const completeMutation = useCompleteAppointment(businessId);
+  const cancelMutation = useCancelSalonAppointment(businessId);
+  const acceptRescheduleMutation = useAcceptReschedule(businessId);
+  const rejectRescheduleMutation = useRejectReschedule(businessId);
+  const createAppointmentMutation = useCreateSalonAppointment(businessId);
 
   // Action handlers
   const handleConfirmAppointment = (appointment: SalonAppointment) => {
@@ -240,6 +142,7 @@ export function ScheduleContainer() {
   const handleConfirmCancel = () => {
     if (appointmentToCancel) {
       cancelMutation.mutate(appointmentToCancel.id);
+      setAppointmentToCancel(null);
     }
   };
 

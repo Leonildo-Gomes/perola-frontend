@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/select";
 import { CV_PHONE_REGEX } from "@/lib/validations/auth";
 import { formatCurrency, formatDuration } from "@/lib/utils";
-import type { Employee } from "@/types/employee";
-import type { SalonService } from "@/types/service";
+import type { Employee } from "@/features/employees/types/employee.types";
+import type { SalonService } from "@/features/services/types/service.types";
 
 const newAppointmentSchema = z.object({
   customerName: z.string().trim().min(2, "Introduza o nome do cliente"),
