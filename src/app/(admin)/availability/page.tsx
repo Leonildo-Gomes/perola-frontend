@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AvailabilityContainer } from "@/components/admin/availability/availability-container";
+import { AvailabilityContainer } from "@/features/availabilities/components";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {

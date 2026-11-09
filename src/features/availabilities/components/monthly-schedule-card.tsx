@@ -5,7 +5,7 @@ import { Calendar, CheckCircle2, AlertCircle, Clock, Sparkles } from "lucide-rea
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MONTH_NAMES, type Holiday, type MonthlySchedule } from "@/types/availability";
+import { MONTH_NAMES, type Holiday, type MonthlySchedule } from "../types/availability.types";
 
 interface MonthlyScheduleCardProps {
   year: number;

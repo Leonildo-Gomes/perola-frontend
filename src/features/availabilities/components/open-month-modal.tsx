@@ -34,7 +34,7 @@ import {
   type HolidayDecision,
   type OpenMonthRequest,
   type WeeklySchedule,
-} from "@/types/availability";
+} from "../types/availability.types";
 
 interface OpenMonthModalProps {
   isOpen: boolean;

@@ -33,12 +33,12 @@ import {
 import {
   createTimeOffSchema,
   type CreateTimeOffFormData,
-} from "@/lib/validations/availability";
+} from "../schemas/availability.schema";
 import {
   TIME_OFF_TYPE_CONFIG,
   type CreateTimeOffPayload,
   type TimeOffType,
-} from "@/types/availability";
+} from "../types/availability.types";
 
 interface TimeOffFormModalProps {
   isOpen: boolean;

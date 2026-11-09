@@ -1,31 +1,28 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
   Clock,
   User,
   AlertTriangle,
   RefreshCw,
-  Sparkles,
   Palmtree,
   CalendarCheck,
-  CheckCircle2,
   Info,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
-import { getEmployees } from "@/lib/api/employees";
+import { useEmployees } from "@/features/employees/hooks/use-employees";
 import {
-  getHolidays,
-  getMonthlySchedules,
-  openMonthlySchedule,
-  getWeeklySchedules,
-  createWeeklySchedule,
-  updateWeeklySchedule,
-} from "@/lib/api/availability";
+  useHolidays,
+  useMonthlySchedules,
+  useWeeklySchedules,
+} from "../hooks/use-availabilities";
+import {
+  useOpenMonthlySchedule,
+  useSaveWeeklySchedule,
+} from "../hooks/use-availability-mutations";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -36,14 +33,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { OpenMonthRequest, ScheduleDay } from "@/types/availability";
+import type { OpenMonthRequest, ScheduleDay } from "../types/availability.types";
 import { MonthlyScheduleCard } from "./monthly-schedule-card";
 import { OpenMonthModal } from "./open-month-modal";
 import { WeeklyScheduleForm } from "./weekly-schedule-form";
 import { TimeOffTab } from "./time-off-tab";
 
 export function AvailabilityContainer() {
-  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
   const activeTenantId = useTenantStore((s) => s.activeBusinessId);
@@ -65,12 +61,7 @@ export function AvailabilityContainer() {
     isLoading: isLoadingEmployees,
     isError: isEmployeesError,
     refetch: refetchEmployees,
-  } = useQuery({
-    queryKey: ["employees", businessId],
-    queryFn: () => getEmployees(businessId),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  } = useEmployees(businessId);
 
   // Effective Employee ID to view/manage
   const effectiveEmployeeId = useMemo(() => {
@@ -106,24 +97,11 @@ export function AvailabilityContainer() {
     isLoading: isLoadingMonthly,
     isError: isMonthlyError,
     refetch: refetchMonthly,
-  } = useQuery({
-    queryKey: ["monthly-schedules", effectiveEmployeeId],
-    queryFn: () => getMonthlySchedules(effectiveEmployeeId),
-    enabled: Boolean(effectiveEmployeeId),
-    staleTime: 30_000,
-  });
+  } = useMonthlySchedules(effectiveEmployeeId);
 
   // 3. Fetch Cape Verde Holidays for this year and next year
   const currentYear = new Date().getFullYear();
-  const { data: holidays = [], isLoading: isLoadingHolidays } = useQuery({
-    queryKey: ["holidays", currentYear],
-    queryFn: async () => {
-      const h1 = await getHolidays(currentYear);
-      const h2 = await getHolidays(currentYear + 1);
-      return [...(Array.isArray(h1) ? h1 : []), ...(Array.isArray(h2) ? h2 : [])];
-    },
-    staleTime: 120_000,
-  });
+  const { data: holidays = [], isLoading: isLoadingHolidays } = useHolidays(currentYear);
 
   // 4. Fetch Weekly Schedules for selected employee
   const {
@@ -131,69 +109,22 @@ export function AvailabilityContainer() {
     isLoading: isLoadingWeekly,
     isError: isWeeklyError,
     refetch: refetchWeekly,
-  } = useQuery({
-    queryKey: ["weekly-schedules", effectiveEmployeeId],
-    queryFn: () => getWeeklySchedules(effectiveEmployeeId),
-    enabled: Boolean(effectiveEmployeeId),
-    staleTime: 30_000,
-  });
+  } = useWeeklySchedules(effectiveEmployeeId);
 
   const activeWeeklySchedule = weeklySchedules[0] || null;
 
   // 5. Open Monthly Schedule Mutation
-  const openMonthMutation = useMutation({
-    mutationFn: (payload: OpenMonthRequest) =>
-      openMonthlySchedule(effectiveEmployeeId, payload),
-    onSuccess: (data, variables) => {
-      toast.success(
-        `Agenda aberta com sucesso para o mês ${variables.month}/${variables.year}!`,
-      );
-      queryClient.invalidateQueries({
-        queryKey: ["monthly-schedules", effectiveEmployeeId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["slots"],
-      });
-      setModalMonth(null);
-    },
-    onError: () => {
-      toast.error(
-        "Não foi possível abrir a agenda mensal. Verifique a conexão e tente novamente.",
-      );
-    },
-  });
+  const openMonthMutation = useOpenMonthlySchedule(effectiveEmployeeId);
 
   // 6. Save Weekly Schedule Mutation
-  const saveWeeklyMutation = useMutation({
-    mutationFn: async (payload: {
-      name: string;
-      isDefault: boolean;
-      days: ScheduleDay[];
-    }) => {
-      if (activeWeeklySchedule?.id) {
-        return updateWeeklySchedule(effectiveEmployeeId, activeWeeklySchedule.id, payload);
-      } else {
-        return createWeeklySchedule(effectiveEmployeeId, payload);
-      }
-    },
-    onSuccess: () => {
-      toast.success("Expediente semanal salvo com sucesso!");
-      queryClient.invalidateQueries({
-        queryKey: ["weekly-schedules", effectiveEmployeeId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["slots"],
-      });
-    },
-    onError: () => {
-      toast.error(
-        "Erro ao salvar o expediente semanal. Verifique os horários e tente novamente.",
-      );
-    },
-  });
+  const saveWeeklyMutation = useSaveWeeklySchedule(
+    effectiveEmployeeId,
+    activeWeeklySchedule?.id,
+  );
 
   const handleOpenMonthConfirm = async (payload: OpenMonthRequest) => {
     await openMonthMutation.mutateAsync(payload);
+    setModalMonth(null);
   };
 
   const handleWeeklySave = async (payload: {

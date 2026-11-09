@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Palmtree,
   Plus,
@@ -12,19 +11,11 @@ import {
   CheckCircle2,
   CalendarOff,
 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import {
-  getTimeOffList,
-  createTimeOff,
-  deleteTimeOff,
-} from "@/lib/api/availability";
-import type {
-  CreateTimeOffPayload,
-  EmployeeTimeOff,
-} from "@/types/availability";
+import type { CreateTimeOffPayload } from "@/features/availabilities/types/availability.types";
+import { useTimeOffList } from "../hooks/use-availabilities";
+import { useCreateTimeOff, useDeleteTimeOff, } from "../hooks/use-availability-mutations";
 import { TimeOffCard } from "./time-off-card";
 import { TimeOffFormModal } from "./time-off-form-modal";
 
@@ -36,7 +27,6 @@ interface TimeOffTabProps {
 type FilterMode = "UPCOMING" | "PAST" | "ALL";
 
 export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
-  const queryClient = useQueryClient();
   const [filterMode, setFilterMode] = useState<FilterMode>("UPCOMING");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -47,53 +37,26 @@ export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: ["time-off", employeeId],
-    queryFn: () => getTimeOffList(employeeId),
-    enabled: Boolean(employeeId),
-    staleTime: 30_000,
-  });
+  } = useTimeOffList(employeeId);
 
   // 2. Create Time-Off Mutation
-  const createMutation = useMutation({
-    mutationFn: (payload: CreateTimeOffPayload) =>
-      createTimeOff(employeeId, payload),
-    onSuccess: () => {
-      toast.success("Ausência registada com sucesso! Horários bloqueados na agenda.");
-      queryClient.invalidateQueries({ queryKey: ["time-off", employeeId] });
-      queryClient.invalidateQueries({ queryKey: ["slots"] });
-      setIsModalOpen(false);
-    },
-    onError: () => {
-      toast.error(
-        "Não foi possível registar a ausência. Verifique a ligação e tente novamente.",
-      );
-    },
-  });
+  const createMutation = useCreateTimeOff(employeeId);
 
   // 3. Delete Time-Off Mutation
-  const deleteMutation = useMutation({
-    mutationFn: (timeOffId: string) => deleteTimeOff(employeeId, timeOffId),
-    onSuccess: () => {
-      toast.success("Bloqueio de agenda removido com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["time-off", employeeId] });
-      queryClient.invalidateQueries({ queryKey: ["slots"] });
-    },
-    onError: () => {
-      toast.error("Erro ao remover ausência. Tente novamente.");
-    },
-    onSettled: () => {
-      setDeletingId(null);
-    },
-  });
+  const deleteMutation = useDeleteTimeOff(employeeId);
 
   const handleDeleteTimeOff = async (id: string) => {
     setDeletingId(id);
-    await deleteMutation.mutateAsync(id);
+    try {
+      await deleteMutation.mutateAsync(id);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const handleCreateSubmit = async (payload: CreateTimeOffPayload) => {
     await createMutation.mutateAsync(payload);
+    setIsModalOpen(false);
   };
 
   // Filtered List based on date
@@ -156,11 +119,10 @@ export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
               variant={filterMode === "UPCOMING" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterMode("UPCOMING")}
-              className={`text-xs rounded-xl min-h-[36px] ${
-                filterMode === "UPCOMING"
-                  ? "bg-teal-600 text-white hover:bg-teal-700"
-                  : "text-slate-600 border-slate-200 hover:bg-slate-50"
-              }`}
+              className={`text-xs rounded-xl min-h-[36px] ${filterMode === "UPCOMING"
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "text-slate-600 border-slate-200 hover:bg-slate-50"
+                }`}
             >
               Próximas & Ativas ({upcomingCount})
             </Button>
@@ -169,11 +131,10 @@ export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
               variant={filterMode === "PAST" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterMode("PAST")}
-              className={`text-xs rounded-xl min-h-[36px] ${
-                filterMode === "PAST"
-                  ? "bg-teal-600 text-white hover:bg-teal-700"
-                  : "text-slate-600 border-slate-200 hover:bg-slate-50"
-              }`}
+              className={`text-xs rounded-xl min-h-[36px] ${filterMode === "PAST"
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "text-slate-600 border-slate-200 hover:bg-slate-50"
+                }`}
             >
               Histórico ({pastCount})
             </Button>
@@ -182,11 +143,10 @@ export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
               variant={filterMode === "ALL" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterMode("ALL")}
-              className={`text-xs rounded-xl min-h-[36px] ${
-                filterMode === "ALL"
-                  ? "bg-teal-600 text-white hover:bg-teal-700"
-                  : "text-slate-600 border-slate-200 hover:bg-slate-50"
-              }`}
+              className={`text-xs rounded-xl min-h-[36px] ${filterMode === "ALL"
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "text-slate-600 border-slate-200 hover:bg-slate-50"
+                }`}
             >
               Todas ({timeOffList.length})
             </Button>
@@ -253,8 +213,8 @@ export function TimeOffTab({ employeeId, employeeName }: TimeOffTabProps) {
               {filterMode === "UPCOMING"
                 ? "Sem ausências agendadas"
                 : filterMode === "PAST"
-                ? "Sem histórico de ausências passadas"
-                : "Nenhuma ausência registada"}
+                  ? "Sem histórico de ausências passadas"
+                  : "Nenhuma ausência registada"}
             </h4>
             <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
               O profissional estará normalmente disponível para receber agendamentos de acordo com o expediente semanal e os meses abertos.

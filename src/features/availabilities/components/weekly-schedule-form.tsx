@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Coffee,
-  Calendar,
   Sparkles,
   Loader2,
 } from "lucide-react";
@@ -26,7 +25,7 @@ import {
   type ScheduleBreak,
   type ScheduleDay,
   type WeeklySchedule,
-} from "@/types/availability";
+} from "../types/availability.types";
 
 const ORDERED_DAYS: DayOfWeek[] = [
   "MONDAY",
@@ -410,22 +409,20 @@ export function WeeklyScheduleForm({
           return (
             <Card
               key={day.dayOfWeek}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${
-                day.isWorking
+              className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${day.isWorking
                   ? "bg-white border-slate-200/90 shadow-2xs hover:border-teal-200"
                   : "bg-slate-50/60 border-slate-200/50 opacity-80"
-              }`}
+                }`}
             >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 {/* Day Identifier & Working Toggle */}
                 <div className="flex items-center justify-between lg:justify-start gap-4 min-w-[200px]">
                   <div className="flex items-center gap-3">
                     <span
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
-                        day.isWorking
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${day.isWorking
                           ? "bg-teal-50 text-teal-700 border border-teal-200"
                           : "bg-slate-200 text-slate-600"
-                      }`}
+                        }`}
                     >
                       {dayMeta.short}
                     </span>

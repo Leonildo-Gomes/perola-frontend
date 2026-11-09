@@ -24,7 +24,7 @@ import {
 import {
   TIME_OFF_TYPE_CONFIG,
   type EmployeeTimeOff,
-} from "@/types/availability";
+} from "../types/availability.types";
 
 interface TimeOffCardProps {
   timeOff: EmployeeTimeOff;
