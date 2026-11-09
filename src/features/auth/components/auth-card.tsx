@@ -1,5 +1,5 @@
 import { Flower2 } from "lucide-react";
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/shared/branding";
 
 interface AuthCardProps {
   title: string;

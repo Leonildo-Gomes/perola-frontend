@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AppointmentStatusBadge } from "@/features/customers/components";
-import { EmptyState } from "@/components/common/empty-state";
+import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";

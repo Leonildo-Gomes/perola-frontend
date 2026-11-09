@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { Providers } from "@/components/common/providers";
+import { Providers } from "@/components/shared/providers";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BusinessOnboardingForm } from "@/components/admin/onboarding/business-onboarding-form";
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/shared/branding";
 
 export const metadata: Metadata = {
   title: "Cadastro do Salão • Pérola SaaS",

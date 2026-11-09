@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { PublicBottomNav } from "@/components/common/public-bottom-nav";
-import { SiteFooter } from "@/components/common/site-footer";
-import { SiteHeader, type SiteHeaderLink } from "@/components/common/site-header";
+import {
+  PublicBottomNav,
+  SiteFooter,
+  SiteHeader,
+  type SiteHeaderLink,
+} from "@/components/shared/navigation";
 
 export const metadata: Metadata = {
   title: "Área do Cliente | Pérola",

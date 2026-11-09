@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarDays, Scissors, Store, Users } from "lucide-react";
-import { MobileBottomNav, type BottomNavItem } from "@/components/common/mobile-bottom-nav";
+import { MobileBottomNav, type BottomNavItem } from "@/components/shared/navigation";
 
 const ITEMS: BottomNavItem[] = [
   { href: "/schedule", label: "Agenda", icon: CalendarDays },

@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowRight, Loader2, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
-import { EmptyState } from "@/components/common/empty-state";
+import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { useLocationHydrated } from "@/hooks/use-location-hydrated";
 import { useMarketplaceInfiniteServices } from "../hooks/use-marketplace-services";

@@ -2,7 +2,7 @@
 
 import { ChevronDown, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useState } from "react";
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/shared/branding";
 import {
   DropdownMenu,
   DropdownMenuContent,

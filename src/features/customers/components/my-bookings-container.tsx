@@ -21,7 +21,7 @@ import { AppointmentCard } from "./appointment-card";
 import { CancelModal } from "./cancel-modal";
 import { RescheduleModal } from "./reschedule-modal";
 import { ReviewModal } from "./review-modal";
-import { EmptyState } from "@/components/common/empty-state";
+import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LocationSelector, SearchBar } from "@/features/marketplace/components";
 import { AuthAction } from "./auth-action";
-import { Logo } from "./logo";
+import { Logo } from "../branding/logo";
 
 export interface SiteHeaderLink {
   href: string;
