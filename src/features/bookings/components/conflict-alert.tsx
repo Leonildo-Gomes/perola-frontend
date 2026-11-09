@@ -3,7 +3,7 @@
 import { TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/lib/datetime";
-import type { SlotItem } from "@/types/booking";
+import type { SlotItem } from "../types/booking.types";
 
 interface ConflictAlertProps {
   /** Start time that was just taken by someone else. */

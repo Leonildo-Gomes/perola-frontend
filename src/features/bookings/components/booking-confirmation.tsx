@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CalendarCheck, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,10 +9,10 @@ import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
-import { getAppointment, getBusinessProfile } from "@/lib/api/booking";
 import { formatInstantLong, formatTime } from "@/lib/datetime";
 import { formatCurrency, formatDuration } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
+import { useBookingAppointment, usePublicBusinessProfile } from "../hooks/use-booking";
 
 export function BookingConfirmation({ appointmentId }: { appointmentId: string }) {
   const router = useRouter();
@@ -24,19 +23,9 @@ export function BookingConfirmation({ appointmentId }: { appointmentId: string }
     if (hydrated && !isAuthenticated) router.replace(`/login?next=${encodeURIComponent(`/book/confirmed/${appointmentId}`)}`);
   }, [hydrated, isAuthenticated, router, appointmentId]);
 
-  const appointment = useQuery({
-    queryKey: ["appointments", "detail", appointmentId],
-    queryFn: ({ signal }) => getAppointment(appointmentId, signal),
-    enabled: hydrated && isAuthenticated,
-    staleTime: 60_000,
-  });
+  const appointment = useBookingAppointment(appointmentId, hydrated && isAuthenticated);
   const businessId = appointment.data?.businessId;
-  const business = useQuery({
-    queryKey: ["marketplace", "business", businessId],
-    queryFn: ({ signal }) => getBusinessProfile(businessId as string, signal),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  const business = usePublicBusinessProfile(businessId as string, Boolean(businessId));
 
   if (appointment.isError) {
     return (

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BookingConfirmation } from "@/components/booking/booking-confirmation";
+import { BookingConfirmation } from "@/features/bookings/components";
 
 export const metadata: Metadata = { title: "Marcação registada — Pérola" };
 

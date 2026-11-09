@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { SlotItem } from "@/types/booking";
+import type { SlotItem } from "../types/booking.types";
 
 interface SlotPickerProps {
   slots: SlotItem[];

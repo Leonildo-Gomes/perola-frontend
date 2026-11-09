@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { BookingWizardContainer } from "@/components/booking/booking-wizard-container";
+import { BookingWizardContainer } from "@/features/bookings/components";
 
 export const metadata: Metadata = {
   title: "Agendar serviço — Pérola",

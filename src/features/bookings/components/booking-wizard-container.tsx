@@ -11,14 +11,15 @@ import { toast } from "sonner";
 import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useInvalidateSlots, useNextAvailableDate, useSlots } from "@/hooks/use-slots";
-import { createAppointment, loadBookingTarget } from "@/lib/api/booking";
+import { useBookingTarget } from "../hooks/use-booking";
+import { useInvalidateSlots, useNextAvailableDate, useSlots } from "../hooks/use-slots";
+import { createAppointment } from "../api/booking.api";
 import { isSlotConflictError } from "@/lib/api/errors";
 import { formatKeyLong, formatTime, upcomingDateKeys } from "@/lib/datetime";
-import { type BookingNotesValues, NOTES_MAX_LENGTH, bookingNotesSchema } from "@/lib/validations/booking";
+import { type BookingNotesValues, NOTES_MAX_LENGTH, bookingNotesSchema } from "../schemas/booking.schema";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
-import { ANY_EMPLOYEE, type BookingTarget } from "@/types/booking";
+import { ANY_EMPLOYEE, type BookingTarget } from "../types/booking.types";
 import { BookingSummary } from "./booking-summary";
 import { ConflictAlert } from "./conflict-alert";
 import { DateCarousel } from "./date-carousel";
@@ -35,11 +36,7 @@ interface Props {
 /** Loads service + business + team, then renders the wizard. */
 export function BookingWizardContainer({ serviceId }: Props) {
   const businessIdHint = useSearchParams().get("businessId");
-  const target = useQuery({
-    queryKey: ["marketplace", "booking-target", serviceId, businessIdHint],
-    queryFn: ({ signal }) => loadBookingTarget(serviceId, businessIdHint, signal),
-    staleTime: 60_000,
-  });
+  const target = useBookingTarget(serviceId, businessIdHint);
 
   if (target.isPending) return <WizardSkeleton />;
   if (target.isError) {
