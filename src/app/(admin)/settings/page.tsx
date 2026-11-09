@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { BusinessSettingsContainer } from "@/components/admin/settings/business-settings-container";
+import { BusinessSettingsContainer } from "@/features/settings/components";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {

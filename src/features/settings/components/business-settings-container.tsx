@@ -29,18 +29,18 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhoneInputCV } from "@/components/auth/phone-input-cv";
 import { BusinessPreviewCard } from "@/components/admin/onboarding/business-preview-card";
-import { getBusiness, updateBusiness } from "@/lib/api/business";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/geography";
 import {
   updateBusinessSchema,
   type UpdateBusinessFormValues,
-} from "@/lib/validations/business";
+} from "../schemas/settings.schema";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
-import type { BusinessResponse } from "@/types/business";
+import type { BusinessResponse } from "../types/settings.types";
+import { useBusinessSettings } from "../hooks/use-settings";
+import { useUpdateBusinessSettings } from "../hooks/use-settings-mutations";
 
 export function BusinessSettingsContainer() {
-  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
   const activeTenantId = useTenantStore((s) => s.activeBusinessId);
@@ -53,12 +53,7 @@ export function BusinessSettingsContainer() {
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: ["business", businessId],
-    queryFn: () => getBusiness(businessId),
-    enabled: Boolean(businessId),
-    staleTime: 60_000,
-  });
+  } = useBusinessSettings(businessId);
 
   const {
     register,
@@ -114,39 +109,25 @@ export function BusinessSettingsContainer() {
   }, [selectedIsland, availableCities, setValue, watch]);
 
   // Mutation to update business
-  const updateMutation = useMutation({
-    mutationFn: (data: UpdateBusinessFormValues) => {
-      return updateBusiness(businessId, {
-        name: data.name,
-        island: data.island,
-        city: data.city,
-        location: data.location,
-        contactPhone: `+238${data.phone}`,
-        isActive: data.isActive,
-      });
-    },
-    onSuccess: (updated) => {
-      toast.success("Definições do salão atualizadas com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["business", businessId] });
-      queryClient.invalidateQueries({ queryKey: ["marketplace"] });
-      reset({
-        name: updated.name,
-        island: updated.island,
-        city: updated.city,
-        location: updated.location,
-        phone: extractPhoneDigits(updated.contactPhone),
-        isActive: updated.isActive,
-      });
-    },
-    onError: () => {
-      toast.error(
-        "Não foi possível salvar as alterações. Verifique os dados e tente novamente.",
-      );
-    },
-  });
+  const updateMutation = useUpdateBusinessSettings(businessId);
 
   const onSubmit = async (data: UpdateBusinessFormValues) => {
-    await updateMutation.mutateAsync(data);
+    const updated = await updateMutation.mutateAsync({
+      name: data.name,
+      island: data.island,
+      city: data.city,
+      location: data.location,
+      contactPhone: `+238${data.phone}`,
+      isActive: data.isActive,
+    });
+    reset({
+      name: updated.name,
+      island: updated.island,
+      city: updated.city,
+      location: updated.location,
+      phone: extractPhoneDigits(updated.contactPhone),
+      isActive: updated.isActive,
+    });
   };
 
   // EMPTY STATE: User does not have a registered business
