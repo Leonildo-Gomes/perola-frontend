@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MyBookingsContainer } from "@/components/customer/my-bookings-container";
+import { MyBookingsContainer } from "@/features/customers/components";
 
 export const metadata: Metadata = {
   title: "Minhas Marcações | Pérola",
