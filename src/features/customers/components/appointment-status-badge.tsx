@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import type { AppointmentStatus } from "../types/customer.types";
 
 const STYLES: Record<Exclude<AppointmentStatus, "RESCHEDULE_PENDING">, { label: string; className: string }> = {

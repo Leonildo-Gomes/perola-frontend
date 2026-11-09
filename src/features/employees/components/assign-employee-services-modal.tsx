@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { Employee } from "../types/employee.types";
 import type { SalonService } from "@/features/services/types/service.types";
 
@@ -114,19 +114,17 @@ export function AssignEmployeeServicesModal({
                   <div
                     key={service.id}
                     onClick={() => handleToggle(service.id)}
-                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                      isSelected
+                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${isSelected
                         ? "border-teal-200 bg-teal-50/40"
                         : "border-slate-100 bg-white hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
-                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-                          isSelected
+                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${isSelected
                             ? "bg-teal-600 border-teal-600 text-white"
                             : "border-slate-300 bg-white"
-                        }`}
+                          }`}
                       >
                         {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
                       </div>

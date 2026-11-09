@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { passwordStrength } from "../schemas/auth.schema";
 
 export const STRENGTH_LABELS = ["Muito fraca", "Fraca", "Razoável", "Boa", "Forte"];

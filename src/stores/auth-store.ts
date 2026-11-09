@@ -2,8 +2,8 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { getQueryClient } from "@/lib/query-client";
-import type { TokenPair } from "@/types/api";
+import { getQueryClient } from "@/lib/react-query/query-client";
+import type { TokenPair } from "@/types/api.types";
 import type { AuthResponse, BusinessMembership, UserProfile } from "@/features/auth/types/auth.types";
 import { authStorage, setRememberSession } from "./auth-storage";
 import { useTenantStore } from "./tenant-store";

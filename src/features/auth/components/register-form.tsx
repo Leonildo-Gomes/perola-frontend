@@ -5,7 +5,7 @@ import { ArrowRight, Loader2, Mail, ShieldCheck, Store, User } from "lucide-reac
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { passwordStrength, registerSchema, type RegisterFormValues, type UserIntent } from "../schemas/auth.schema";
 import { AuthAlert } from "./auth-alert";
 import { Field } from "./field";

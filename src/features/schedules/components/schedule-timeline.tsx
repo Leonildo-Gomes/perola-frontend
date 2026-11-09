@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Coffee, Plus, Sparkles, User } from "lucide-react";
-import { cvDateKey, formatTime } from "@/lib/datetime";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cvDateKey, formatTime } from "@/lib/utils/datetime";
+import { cn, formatCurrency } from "@/lib/utils/utils";
 import type { SalonAppointment } from "../types/schedule.types";
 import type { Employee } from "@/features/employees/types/employee.types";
 import { AppointmentBlock } from "./appointment-block";

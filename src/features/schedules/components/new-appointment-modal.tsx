@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CV_PHONE_REGEX } from "@/features/auth/schemas/auth.schema";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { Employee } from "@/features/employees/types/employee.types";
 import type { SalonService } from "@/features/services/types/service.types";
 

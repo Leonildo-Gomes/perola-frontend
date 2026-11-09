@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { formatDayNumber, formatKeyLong, formatMonthShort, formatWeekdayShort } from "@/lib/datetime";
-import { cn } from "@/lib/utils";
+import { formatDayNumber, formatKeyLong, formatMonthShort, formatWeekdayShort } from "@/lib/utils/datetime";
+import { cn } from "@/lib/utils/utils";
 
 interface DateCarouselProps {
   /** `YYYY-MM-DD` keys (Cape Verde). */

@@ -1,4 +1,4 @@
-import type { TokenPair } from "@/types/api";
+import type { TokenPair } from "@/types/api.types";
 import {
   ApiError,
   NetworkError,

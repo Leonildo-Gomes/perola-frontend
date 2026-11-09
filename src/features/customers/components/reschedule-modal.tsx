@@ -21,7 +21,7 @@ import {
   formatKeyLong,
   formatTime,
   upcomingDateKeys,
-} from "@/lib/datetime";
+} from "@/lib/utils/datetime";
 import {
   type RescheduleAppointmentFormValues,
   rescheduleAppointmentSchema,
@@ -137,11 +137,10 @@ export function RescheduleModal({ appointment, isOpen, onClose }: RescheduleModa
                   key={dateKey}
                   type="button"
                   onClick={() => setSelectedDate(dateKey)}
-                  className={`min-h-[44px] px-2.5 py-1.5 text-xs rounded-lg font-medium text-left border transition-all ${
-                    selectedDate === dateKey
+                  className={`min-h-[44px] px-2.5 py-1.5 text-xs rounded-lg font-medium text-left border transition-all ${selectedDate === dateKey
                       ? "bg-perola-deep text-white border-perola-deep shadow-sm"
                       : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   <p className="truncate font-semibold capitalize">{formatKeyLong(dateKey)}</p>
                   <p className="text-[10px] opacity-80">{dateKey}</p>
@@ -161,11 +160,10 @@ export function RescheduleModal({ appointment, isOpen, onClose }: RescheduleModa
                   key={slot}
                   type="button"
                   onClick={() => setSelectedTime(slot)}
-                  className={`min-h-[44px] py-1 text-xs rounded-lg font-semibold border transition-all ${
-                    selectedTime === slot
+                  className={`min-h-[44px] py-1 text-xs rounded-lg font-semibold border transition-all ${selectedTime === slot
                       ? "bg-perola-deep text-white border-perola-deep shadow-sm"
                       : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   {slot}
                 </button>

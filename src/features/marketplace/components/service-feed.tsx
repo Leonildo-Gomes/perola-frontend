@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { useLocationHydrated } from "@/hooks/use-location-hydrated";
 import { useMarketplaceInfiniteServices } from "../hooks/use-marketplace-services";
-import { SERVICE_CATEGORIES } from "@/lib/categories";
+import { SERVICE_CATEGORIES } from "@/lib/utils/categories";
 import { useLocationStore } from "@/stores/location-store";
 import type { MarketplaceFilters } from "../types/marketplace.types";
 import { LocationFilter } from "./location-filter";

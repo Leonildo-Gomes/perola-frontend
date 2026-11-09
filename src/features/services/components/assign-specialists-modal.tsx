@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import type { SalonEmployeeSummary, SalonService } from "../types/service.types";
 
 interface AssignSpecialistsModalProps {

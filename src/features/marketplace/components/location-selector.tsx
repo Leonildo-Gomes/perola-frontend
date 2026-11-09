@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ISLANDS, ISLAND_CITIES } from "@/lib/geography";
+import { ISLANDS, ISLAND_CITIES } from "@/lib/utils/geography";
 import { useLocationStore } from "@/stores/location-store";
 
 interface LocationSelectorProps {

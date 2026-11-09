@@ -3,7 +3,7 @@
 import { ArrowRight, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface SearchBarProps {
   className?: string;

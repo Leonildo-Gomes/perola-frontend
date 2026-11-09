@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { SalonEmployeeSummary, SalonService } from "../types/service.types";
 
 interface ServiceListItemProps {

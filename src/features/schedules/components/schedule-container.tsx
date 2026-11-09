@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { addDaysToKey, cvDateKey, formatDateHeader } from "@/lib/datetime";
-import { formatCurrency } from "@/lib/utils";
+import { addDaysToKey, cvDateKey, formatDateHeader } from "@/lib/utils/datetime";
+import { formatCurrency } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
 import type { SalonAppointment } from "../types/schedule.types";
@@ -271,33 +271,30 @@ export function ScheduleContainer() {
               <button
                 type="button"
                 onClick={() => setViewMode("DAY")}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  viewMode === "DAY"
-                    ? "bg-teal-600 text-white shadow-xs font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${viewMode === "DAY"
+                  ? "bg-teal-600 text-white shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900"
+                  }`}
               >
                 Dia
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("WEEK")}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  viewMode === "WEEK"
-                    ? "bg-teal-600 text-white shadow-xs font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${viewMode === "WEEK"
+                  ? "bg-teal-600 text-white shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900"
+                  }`}
               >
                 Semana
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("MONTH")}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  viewMode === "MONTH"
-                    ? "bg-teal-600 text-white shadow-xs font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${viewMode === "MONTH"
+                  ? "bg-teal-600 text-white shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900"
+                  }`}
               >
                 Mês
               </button>
@@ -364,11 +361,10 @@ export function ScheduleContainer() {
         <button
           type="button"
           onClick={() => setSelectedEmployeeId("ALL")}
-          className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-colors ${
-            selectedEmployeeId === "ALL"
-              ? "bg-teal-600 text-white shadow-xs"
-              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
-          }`}
+          className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-colors ${selectedEmployeeId === "ALL"
+            ? "bg-teal-600 text-white shadow-xs"
+            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+            }`}
         >
           Todos os Profissionais ({employees.length})
         </button>
@@ -380,16 +376,14 @@ export function ScheduleContainer() {
               key={emp.id}
               type="button"
               onClick={() => setSelectedEmployeeId(emp.id)}
-              className={`min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 transition-colors ${
-                isSelected
-                  ? "bg-teal-600 text-white shadow-xs"
-                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
-              }`}
+              className={`min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 transition-colors ${isSelected
+                ? "bg-teal-600 text-white shadow-xs"
+                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                }`}
             >
               <span
-                className={`flex h-5 w-5 rounded-full items-center justify-center text-[10px] font-bold ${
-                  isSelected ? "bg-white text-teal-700" : "bg-teal-100 text-teal-800"
-                }`}
+                className={`flex h-5 w-5 rounded-full items-center justify-center text-[10px] font-bold ${isSelected ? "bg-white text-teal-700" : "bg-teal-100 text-teal-800"
+                  }`}
               >
                 {emp.displayName.slice(0, 2).toUpperCase()}
               </span>

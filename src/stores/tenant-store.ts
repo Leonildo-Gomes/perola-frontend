@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { getQueryClient } from "@/lib/query-client";
+import { getQueryClient } from "@/lib/react-query/query-client";
 import type { BusinessRole } from "@/features/auth/types/auth.types";
 
 interface TenantState {

@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { Page } from "@/types/api";
+import type { Page } from "@/types/api.types";
 import type {
   AppointmentReview,
   CancelAppointmentPayload,

@@ -33,7 +33,7 @@ import {
   setEmployeeServices,
   updateSalonService,
 } from "../api/service.api";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
 import type {

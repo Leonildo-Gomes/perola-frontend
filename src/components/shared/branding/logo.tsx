@@ -1,6 +1,6 @@
 import { Flower2 } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface LogoProps {
   className?: string;

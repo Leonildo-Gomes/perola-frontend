@@ -1,6 +1,6 @@
 import { CalendarDays, Clock, MapPin, Store, UserRound, Wallet } from "lucide-react";
-import { formatInstantLong, formatTime } from "@/lib/datetime";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatInstantLong, formatTime } from "@/lib/utils/datetime";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { PublicBusinessProfile } from "../types/booking.types";
 import type { MarketplaceService } from "@/features/marketplace/types/marketplace.types";
 

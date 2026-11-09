@@ -22,8 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatTime } from "@/lib/datetime";
-import { cn, formatCurrency, formatDuration } from "@/lib/utils";
+import { formatTime } from "@/lib/utils/datetime";
+import { cn, formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { SalonAppointment } from "../types/schedule.types";
 
 interface AppointmentBlockProps {

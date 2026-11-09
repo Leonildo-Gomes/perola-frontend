@@ -26,8 +26,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useMyBookings } from "../hooks/use-my-bookings";
-import { formatInstantLong, formatTime } from "@/lib/datetime";
-import { formatCurrency } from "@/lib/utils";
+import { formatInstantLong, formatTime } from "@/lib/utils/datetime";
+import { formatCurrency } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import type { CustomerAppointment } from "../types/customer.types";
 

@@ -18,8 +18,8 @@ import {
 import Link from "next/link";
 import { AppointmentStatusBadge } from "./appointment-status-badge";
 import { Button } from "@/components/ui/button";
-import { formatInstantLong, formatTime } from "@/lib/datetime";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatInstantLong, formatTime } from "@/lib/utils/datetime";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { CustomerAppointment } from "../types/customer.types";
 
 interface AppointmentCardProps {

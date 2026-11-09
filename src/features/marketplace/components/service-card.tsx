@@ -2,7 +2,7 @@ import { Clock, Flower2, MapPin, Star, CalendarDays } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { MarketplaceService } from "../types/marketplace.types";
 
 interface ServiceCardProps {

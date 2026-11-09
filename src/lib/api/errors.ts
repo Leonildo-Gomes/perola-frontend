@@ -1,4 +1,4 @@
-import type { InvalidParam, ProblemDetails } from "@/types/api";
+import type { InvalidParam, ProblemDetails } from "@/types/api.types";
 
 export const SLOT_CONFLICT_TYPE = "slot-already-booked";
 

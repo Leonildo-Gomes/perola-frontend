@@ -4,7 +4,7 @@ import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { getSlots } from "../api/booking.api";
 import { bookingKeys } from "../queries/booking.keys";
-import { formatTime } from "@/lib/datetime";
+import { formatTime } from "@/lib/utils/datetime";
 import type { SlotItem } from "../types/booking.types";
 
 /** Anti-overbooking freshness: slots are stale after 10s. */

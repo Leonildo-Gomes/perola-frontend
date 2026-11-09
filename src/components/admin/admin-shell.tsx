@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { AdminBottomNav } from "./admin-bottom-nav";
 import { AdminSidebar } from "./admin-sidebar";

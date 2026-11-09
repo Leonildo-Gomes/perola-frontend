@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { PhoneInputCV } from "@/features/auth/components";
 import { Button } from "@/components/ui/button";
 import { createBusiness } from "@/features/settings/api/settings.api";
-import { ISLAND_CITIES, ISLANDS } from "@/lib/geography";
+import { ISLAND_CITIES, ISLANDS } from "@/lib/utils/geography";
 import {
   type CreateBusinessFormValues,
   createBusinessSchema,
@@ -124,13 +124,12 @@ export function BusinessOnboardingForm() {
                 id="business-name"
                 type="text"
                 placeholder="Ex: Salão Beleza Crioula"
-                className={`w-full h-12 pl-10 pr-10 rounded-xl border bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
-                  errors.name
+                className={`w-full h-12 pl-10 pr-10 rounded-xl border bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${errors.name
                     ? "border-rose-400 focus:border-rose-500 focus:ring-rose-200"
                     : watchedValues.name && !errors.name
                       ? "border-slate-300 focus:border-perola-deep focus:ring-perola-deep/20"
                       : "border-slate-200 focus:border-perola-deep focus:ring-perola-deep/20"
-                }`}
+                  }`}
                 {...register("name")}
               />
               {watchedValues.name && !errors.name && (

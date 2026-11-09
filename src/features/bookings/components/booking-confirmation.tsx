@@ -9,8 +9,8 @@ import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
-import { formatInstantLong, formatTime } from "@/lib/datetime";
-import { formatCurrency, formatDuration } from "@/lib/utils";
+import { formatInstantLong, formatTime } from "@/lib/utils/datetime";
+import { formatCurrency, formatDuration } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBookingAppointment, usePublicBusinessProfile } from "../hooks/use-booking";
 

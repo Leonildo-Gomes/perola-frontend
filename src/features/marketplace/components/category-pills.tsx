@@ -3,8 +3,8 @@
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { SERVICE_CATEGORIES } from "@/lib/categories";
-import { cn } from "@/lib/utils";
+import { SERVICE_CATEGORIES } from "@/lib/utils/categories";
+import { cn } from "@/lib/utils/utils";
 
 const pill = "inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap gap-2 rounded-full border px-4 text-sm font-semibold transition-colors";
 

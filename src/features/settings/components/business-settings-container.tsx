@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhoneInputCV } from "@/features/auth/components";
 import { BusinessPreviewCard } from "@/components/admin/onboarding/business-preview-card";
-import { ISLAND_CITIES, ISLANDS } from "@/lib/geography";
+import { ISLAND_CITIES, ISLANDS } from "@/lib/utils/geography";
 import {
   updateBusinessSchema,
   type UpdateBusinessFormValues,
@@ -243,11 +243,10 @@ export function BusinessSettingsContainer() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* 1. Status de Visibilidade Pública (Switch) */}
             <div
-              className={`p-5 rounded-2xl border transition-all ${
-                isActive
+              className={`p-5 rounded-2xl border transition-all ${isActive
                   ? "bg-emerald-50/40 border-emerald-200 shadow-2xs"
                   : "bg-amber-50/40 border-amber-200 shadow-2xs"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1">

@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import * as React from "react";
 import { Input, type InputProps } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface IconInputProps extends InputProps {
   icon: LucideIcon;
