@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { LocationSelector } from "@/components/marketplace/location-selector";
-import { SearchBar } from "@/components/marketplace/search-bar";
+import { LocationSelector, SearchBar } from "@/features/marketplace/components";
 import { AuthAction } from "./auth-action";
 import { Logo } from "./logo";
 

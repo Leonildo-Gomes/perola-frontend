@@ -1,7 +1,7 @@
 import { PublicBottomNav } from "@/components/common/public-bottom-nav";
 import { SiteFooter } from "@/components/common/site-footer";
 import { SiteHeader, type SiteHeaderLink } from "@/components/common/site-header";
-import { MarketplaceToolbar } from "@/components/marketplace/marketplace-toolbar";
+import { MarketplaceToolbar } from "@/features/marketplace/components";
 
 const HEADER_LINKS: SiteHeaderLink[] = [
   { href: "/register", label: "Para Profissionais" },

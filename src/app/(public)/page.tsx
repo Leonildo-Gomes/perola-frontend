@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ServiceFeed } from "@/components/marketplace/service-feed";
+import { ServiceFeed } from "@/features/marketplace/components";
 
 export default function HomePage() {
   return (
