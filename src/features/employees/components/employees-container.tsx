@@ -1,17 +1,12 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
-  Calendar,
-  CheckCircle2,
   ChevronRight,
-  Filter,
   Plus,
   RefreshCw,
   Scissors,
   Search,
-  Shield,
   Star,
   Users,
 } from "lucide-react";
@@ -41,7 +36,7 @@ import {
   useUpdateEmployee,
   useUpdateEmployeeServices,
 } from "../hooks/use-employee-mutations";
-import { useServices } from "@/features/services/hooks/use-services";
+import { useActiveServices } from "@/features/services/hooks/use-services";
 import { AssignEmployeeServicesModal } from "./assign-employee-services-modal";
 import { EmployeeCard } from "./employee-card";
 import { EmployeeFormModal } from "./employee-form-modal";
@@ -69,7 +64,7 @@ export function EmployeesContainer() {
 
   // Queries
   const employeesQuery = useEmployees(businessId);
-  const servicesQuery = useServices(businessId);
+  const servicesQuery = useActiveServices(businessId);
 
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
   const services = useMemo(() => servicesQuery.data ?? [], [servicesQuery.data]);
@@ -577,4 +572,6 @@ export function EmployeesContainer() {
 }
 
 export const TeamContainer = EmployeesContainer;
+
+
 

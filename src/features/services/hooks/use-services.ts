@@ -10,3 +10,7 @@ export function useServices(businessId: string) {
 export function useService(businessId: string, serviceId: string) {
     return useQuery(serviceQueries.detail(businessId, serviceId));
 }
+
+export function useActiveServices(businessId: string) {
+    return useQuery(serviceQueries.active(businessId));
+}

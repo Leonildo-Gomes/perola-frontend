@@ -7,6 +7,9 @@ export const serviceKeys = {
     list: (businessId: string) =>
         [...serviceKeys.lists(), businessId] as const,
 
+    active: (businessId: string) =>
+        [...serviceKeys.list(businessId), "active"] as const,
+
     details: () =>
         [...serviceKeys.all, "detail"] as const,
 

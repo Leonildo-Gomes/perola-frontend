@@ -61,6 +61,16 @@ export async function changeServiceStatus(
     });
 }
 
+export async function getActiveServices(
+    businessId: string,
+    signal?: AbortSignal,
+): Promise<SalonService[]> {
+    return api.get<SalonService[]>(`/api/v1/businesses/${businessId}/services/active`, {
+        tenant: true,
+        signal,
+    });
+}
+
 // Aliases for salon service operations
 export { getServices as getSalonServices };
 export { createService as createSalonService };
