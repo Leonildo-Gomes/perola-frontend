@@ -2,8 +2,49 @@ import { api } from "@/lib/api/client";
 import type {
   CreateEmployeePayload,
   Employee,
+  EmployeeApiDto,
   UpdateEmployeePayload,
 } from "../types/employee.types";
+
+function sanitizeAvatarUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed;
+  }
+  return null;
+}
+
+export function mapEmployeeResponse(raw: EmployeeApiDto): Employee {
+  const accessRole =
+    raw.accessRole ?? (raw.isOwner ? "OWNER" : "EMPLOYEE");
+
+  return {
+    id: raw.id,
+    businessId: raw.businessId,
+    userId: raw.userId ?? null,
+    displayName: raw.displayName,
+    specialty: raw.specialty ?? null,
+    accessRole,
+    email: raw.email ?? null,
+    phone: raw.phone ?? null,
+    avatarUrl: sanitizeAvatarUrl(raw.avatarUrl),
+    isActive: Boolean(raw.isActive),
+    isOwner: accessRole === "OWNER" || Boolean(raw.isOwner),
+    rating: raw.rating ?? null,
+    reviewCount: raw.reviewCount ?? null,
+    assignedServiceIds: Array.isArray(raw.assignedServiceIds)
+      ? raw.assignedServiceIds
+      : [],
+    workingHoursSummary: raw.workingHoursSummary ?? null,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt,
+  };
+}
 
 /**
  * List all employees / staff members for a specific salon business (`GET /api/v1/businesses/{id}/employees`).
@@ -12,10 +53,20 @@ export async function getEmployees(
   businessId: string,
   signal?: AbortSignal,
 ): Promise<Employee[]> {
-  return api.get<Employee[]>(`/api/v1/businesses/${businessId}/employees`, {
-    tenant: true,
-    signal,
-  });
+  const res = await api.get<EmployeeApiDto[] | EmployeeApiDto[][]>(
+    `/api/v1/businesses/${businessId}/employees`,
+    {
+      tenant: true,
+      signal,
+    },
+  );
+
+  if (!Array.isArray(res)) return [];
+  const flatList = Array.isArray(res[0])
+    ? (res as EmployeeApiDto[][]).flat()
+    : (res as EmployeeApiDto[]);
+
+  return flatList.map(mapEmployeeResponse);
 }
 
 /**
@@ -26,13 +77,14 @@ export async function getEmployee(
   employeeId: string,
   signal?: AbortSignal,
 ): Promise<Employee> {
-  return api.get<Employee>(
+  const res = await api.get<EmployeeApiDto>(
     `/api/v1/businesses/${businessId}/employees/${employeeId}`,
     {
       tenant: true,
       signal,
     },
   );
+  return mapEmployeeResponse(res);
 }
 
 /**
@@ -42,23 +94,33 @@ export async function createEmployee(
   businessId: string,
   payload: CreateEmployeePayload,
 ): Promise<Employee> {
-  const result = await api.post<Employee>(
+  const res = await api.post<EmployeeApiDto>(
     `/api/v1/businesses/${businessId}/employees`,
     payload,
     { tenant: true },
   );
+  const mapped = mapEmployeeResponse(res);
 
-  // If services were selected upon creation, associate them immediately
-  if (payload.assignedServiceIds && payload.assignedServiceIds.length > 0 && result.id) {
+  // If services were selected upon creation and backend didn't persist them inline, associate them immediately
+  if (
+    payload.assignedServiceIds &&
+    payload.assignedServiceIds.length > 0 &&
+    mapped.id &&
+    mapped.assignedServiceIds.length === 0
+  ) {
     try {
-      await updateEmployeeServices(businessId, result.id, payload.assignedServiceIds);
-      result.assignedServiceIds = payload.assignedServiceIds;
+      await updateEmployeeServices(
+        businessId,
+        mapped.id,
+        payload.assignedServiceIds,
+      );
+      mapped.assignedServiceIds = payload.assignedServiceIds;
     } catch {
       // Non-fatal if initial assignment fails
     }
   }
 
-  return result;
+  return mapped;
 }
 
 /**
@@ -69,19 +131,24 @@ export async function updateEmployee(
   employeeId: string,
   payload: UpdateEmployeePayload,
 ): Promise<Employee> {
-  const result = await api.patch<Employee>(
+  const res = await api.patch<EmployeeApiDto>(
     `/api/v1/businesses/${businessId}/employees/${employeeId}`,
     payload,
     { tenant: true },
   );
+  const mapped = mapEmployeeResponse(res);
 
-  // If assignedServiceIds is passed, update employee-service associations
+  // If assignedServiceIds is passed, ensure employee-service associations stay in sync
   if (payload.assignedServiceIds !== undefined) {
-    await updateEmployeeServices(businessId, employeeId, payload.assignedServiceIds);
-    result.assignedServiceIds = payload.assignedServiceIds;
+    await updateEmployeeServices(
+      businessId,
+      employeeId,
+      payload.assignedServiceIds,
+    );
+    mapped.assignedServiceIds = payload.assignedServiceIds;
   }
 
-  return result;
+  return mapped;
 }
 
 /**
@@ -152,4 +219,3 @@ export {
   getEmployeeAssignedServices as getEmployeeServices,
   updateEmployeeServices as setEmployeeServices,
 };
-

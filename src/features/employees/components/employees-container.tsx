@@ -44,7 +44,6 @@ import { EmployeeFormModal } from "./employee-form-modal";
 type TabFilter = "ALL" | "OWNERS" | "STAFF";
 
 export function EmployeesContainer() {
-  const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
   const activeTenantId = useTenantStore((s) => s.activeBusinessId);
 
@@ -89,7 +88,7 @@ export function EmployeesContainer() {
   // Tab counts
   const tabCounts = useMemo(() => {
     const owners = employees.filter(
-      (e) => e.isOwner || e.accessRole === "OWNER" || e.userId === user?.id,
+      (e) => e.isOwner || e.accessRole === "OWNER",
     ).length;
     const staff = employees.length - owners;
     return {
@@ -97,13 +96,12 @@ export function EmployeesContainer() {
       OWNERS: owners,
       STAFF: Math.max(0, staff),
     };
-  }, [employees, user?.id]);
+  }, [employees]);
 
   // Filtered employees
   const filteredEmployees = useMemo(() => {
     return employees.filter((emp) => {
-      const isOwner =
-        emp.isOwner || emp.accessRole === "OWNER" || emp.userId === user?.id;
+      const isOwner = emp.isOwner || emp.accessRole === "OWNER";
 
       // Tab filter
       if (activeTab === "OWNERS" && !isOwner) return false;
@@ -113,13 +111,15 @@ export function EmployeesContainer() {
       if (searchQuery.trim() === "") return true;
       const q = searchQuery.toLowerCase();
       const nameMatch = emp.displayName.toLowerCase().includes(q);
-      const roleMatch = emp.role ? emp.role.toLowerCase().includes(q) : false;
+      const specialtyMatch = emp.specialty
+        ? emp.specialty.toLowerCase().includes(q)
+        : false;
       const phoneMatch = emp.phone ? emp.phone.includes(q) : false;
       const emailMatch = emp.email ? emp.email.toLowerCase().includes(q) : false;
 
-      return nameMatch || roleMatch || phoneMatch || emailMatch;
+      return nameMatch || specialtyMatch || phoneMatch || emailMatch;
     });
-  }, [employees, activeTab, searchQuery, user?.id]);
+  }, [employees, activeTab, searchQuery]);
 
   // Mutations
   const createEmployeeMutation = useCreateEmployee(businessId);
@@ -140,14 +140,18 @@ export function EmployeesContainer() {
   };
 
   const handleFormSubmit = async (values: EmployeeFormValues) => {
+    const formattedPhone = values.phone.startsWith("+238")
+      ? values.phone
+      : `+238${values.phone}`;
+
     if (employeeToEdit) {
       await updateEmployeeMutation.mutateAsync({
         employeeId: employeeToEdit.id,
         payload: {
           displayName: values.displayName,
-          role: values.role,
+          specialty: values.specialty,
           accessRole: values.accessRole,
-          phone: values.phone,
+          phone: formattedPhone,
           email: values.email || undefined,
           assignedServiceIds: values.assignedServiceIds,
         },
@@ -155,9 +159,9 @@ export function EmployeesContainer() {
     } else {
       await createEmployeeMutation.mutateAsync({
         displayName: values.displayName,
-        role: values.role,
+        specialty: values.specialty,
         accessRole: values.accessRole,
-        phone: values.phone,
+        phone: formattedPhone,
         email: values.email || undefined,
         assignedServiceIds: values.assignedServiceIds,
       });
@@ -442,9 +446,7 @@ export function EmployeesContainer() {
                 employee={employee}
                 services={services}
                 isCurrentOwner={
-                  employee.isOwner ||
-                  employee.accessRole === "OWNER" ||
-                  employee.userId === user?.id
+                  Boolean(employee.isOwner || employee.accessRole === "OWNER")
                 }
                 onToggleActive={handleToggleActive}
                 onEdit={handleOpenEditModal}
@@ -490,9 +492,7 @@ export function EmployeesContainer() {
                     employee={employee}
                     services={services}
                     isCurrentOwner={
-                      employee.isOwner ||
-                      employee.accessRole === "OWNER" ||
-                      employee.userId === user?.id
+                      Boolean(employee.isOwner || employee.accessRole === "OWNER")
                     }
                     onToggleActive={handleToggleActive}
                     onEdit={handleOpenEditModal}

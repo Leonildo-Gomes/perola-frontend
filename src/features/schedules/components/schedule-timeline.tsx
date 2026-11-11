@@ -181,7 +181,7 @@ export function ScheduleTimeline({
                         )}
                       </div>
                       <p className="text-xs text-slate-500 truncate">
-                        {emp.role || "Especialista"} • {empAppointments.length} marcações
+                        {emp.specialty || "Especialista"} • {empAppointments.length} marcações
                       </p>
                     </div>
                   </div>

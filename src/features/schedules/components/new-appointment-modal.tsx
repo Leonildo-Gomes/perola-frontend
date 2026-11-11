@@ -195,7 +195,7 @@ export function NewAppointmentModal({
               <SelectContent>
                 {employees.map((emp) => (
                   <SelectItem key={emp.id} value={emp.id}>
-                    {emp.displayName} ({emp.role || "Especialista"})
+                    {emp.displayName} ({emp.specialty || "Especialista"})
                   </SelectItem>
                 ))}
               </SelectContent>

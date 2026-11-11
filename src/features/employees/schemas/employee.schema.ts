@@ -7,11 +7,11 @@ export const employeeFormSchema = z.object({
     .trim()
     .min(2, "O nome do colaborador deve ter pelo menos 2 caracteres")
     .max(120, "O nome não pode exceder 120 caracteres"),
-  role: z
+  specialty: z
     .string()
     .trim()
-    .min(2, "Indique a função ou especialidade (ex: Cabeleireira, Barbeiro, Manicure)")
-    .max(80, "A função não pode exceder 80 caracteres"),
+    .min(2, "Indique a especialidade (ex: Cabeleireira, Barbeiro, Manicure)")
+    .max(80, "A especialidade não pode exceder 80 caracteres"),
   accessRole: z.enum(["OWNER", "EMPLOYEE"]).default("EMPLOYEE"),
   phone: z
     .string()
@@ -30,4 +30,3 @@ export const employeeFormSchema = z.object({
 });
 
 export type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
-

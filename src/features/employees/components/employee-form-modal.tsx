@@ -50,7 +50,7 @@ export function EmployeeFormModal({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {
       displayName: "",
-      role: "Cabeleireira Sénior",
+      specialty: "Cabeleireira Sénior",
       accessRole: "EMPLOYEE",
       phone: "",
       email: "",
@@ -64,18 +64,21 @@ export function EmployeeFormModal({
   useEffect(() => {
     if (open) {
       if (employeeToEdit) {
+        const rawDigits = employeeToEdit.phone
+          ? employeeToEdit.phone.replace(/\D/g, "").replace(/^238/, "").slice(0, 7)
+          : "";
         reset({
           displayName: employeeToEdit.displayName,
-          role: employeeToEdit.role || "Especialista",
+          specialty: employeeToEdit.specialty || "Especialista",
           accessRole: employeeToEdit.accessRole || (employeeToEdit.isOwner ? "OWNER" : "EMPLOYEE"),
-          phone: employeeToEdit.phone ? employeeToEdit.phone.replace(/^(\+238|\+?238\s*)/, "") : "",
+          phone: rawDigits,
           email: employeeToEdit.email || "",
           assignedServiceIds: employeeToEdit.assignedServiceIds || [],
         });
       } else {
         reset({
           displayName: "",
-          role: "Cabeleireira Sénior",
+          specialty: "Cabeleireira Sénior",
           accessRole: "EMPLOYEE",
           phone: "",
           email: "",
@@ -90,7 +93,7 @@ export function EmployeeFormModal({
     if (current.includes(serviceId)) {
       setValue(
         "assignedServiceIds",
-        current.filter((id) => id !== serviceId),
+        current.filter((id: string) => id !== serviceId),
         { shouldValidate: true }
       );
     } else {
@@ -157,20 +160,20 @@ export function EmployeeFormModal({
           {/* Cargo / Especialidade */}
           <div className="space-y-1.5">
             <label
-              htmlFor="emp-role"
+              htmlFor="emp-specialty"
               className="text-xs font-semibold text-slate-700"
             >
-              Função / Especialidade <span className="text-rose-500">*</span>
+              Especialidade <span className="text-rose-500">*</span>
             </label>
             <Input
-              id="emp-role"
+              id="emp-specialty"
               placeholder="Ex: Barbeiro & Estilo, Trancista Sénior, Manicure"
-              {...register("role")}
+              {...register("specialty")}
               disabled={isSubmitting}
               className="h-11 rounded-xl"
             />
-            {errors.role && (
-              <p className="text-xs text-rose-600">{errors.role.message}</p>
+            {errors.specialty && (
+              <p className="text-xs text-rose-600">{errors.specialty.message}</p>
             )}
           </div>
 

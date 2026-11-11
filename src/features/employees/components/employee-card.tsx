@@ -41,6 +41,51 @@ interface EmployeeCardProps {
   isPending?: boolean;
 }
 
+function formatCvPhoneDisplay(rawPhone?: string | null): string | null {
+  if (!rawPhone) return null;
+  const digits = rawPhone.replace(/\D/g, "").replace(/^238/, "");
+  if (digits.length === 7) {
+    return `+238 ${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)}`;
+  }
+  return rawPhone.startsWith("+") ? rawPhone : `+238 ${rawPhone}`;
+}
+
+function EmployeeAvatar({
+  displayName,
+  avatarUrl,
+  isOwner,
+  sizeClass,
+}: {
+  displayName: string;
+  avatarUrl?: string | null;
+  isOwner: boolean;
+  sizeClass: string;
+}) {
+  const initials = displayName.slice(0, 2).toUpperCase();
+  return (
+    <div
+      className={cn(
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold",
+        sizeClass,
+        isOwner
+          ? "bg-teal-100 text-teal-800 ring-2 ring-teal-600/30"
+          : "bg-slate-100 text-slate-700",
+      )}
+    >
+      {avatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={avatarUrl}
+          alt={displayName}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        initials
+      )}
+    </div>
+  );
+}
+
 export function EmployeeCard({
   employee,
   services,
@@ -51,8 +96,11 @@ export function EmployeeCard({
   onDelete,
   isPending = false,
 }: EmployeeCardProps) {
-  const isOwner = employee.isOwner || employee.accessRole === "OWNER" || isCurrentOwner;
+  const isOwner = Boolean(
+    employee.isOwner || employee.accessRole === "OWNER" || isCurrentOwner,
+  );
   const isInactive = !employee.isActive;
+  const formattedPhone = formatCvPhoneDisplay(employee.phone);
 
   // Resolve assigned service names
   const assignedServices = services.filter((s) =>
@@ -75,16 +123,12 @@ export function EmployeeCard({
         {/* Top Header: Avatar, Name, Role Badge, Active Toggle */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div
-              className={cn(
-                "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold",
-                isOwner
-                  ? "bg-teal-100 text-teal-800 ring-2 ring-teal-600/30"
-                  : "bg-slate-100 text-slate-700",
-              )}
-            >
-              {employee.displayName.slice(0, 2).toUpperCase()}
-            </div>
+            <EmployeeAvatar
+              displayName={employee.displayName}
+              avatarUrl={employee.avatarUrl}
+              isOwner={isOwner}
+              sizeClass="h-12 w-12 text-sm"
+            />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-bold text-slate-900 text-sm truncate">
@@ -107,7 +151,7 @@ export function EmployeeCard({
                 )}
               </div>
               <p className="text-xs font-medium text-slate-500 mt-0.5 truncate">
-                {employee.role || "Especialista"}
+                {employee.specialty || "Especialista"}
               </p>
             </div>
           </div>
@@ -124,20 +168,22 @@ export function EmployeeCard({
         </div>
 
         {/* Contact info */}
-        <div className="flex flex-col gap-1 border-t border-slate-100 pt-2 text-xs text-slate-600">
-          {employee.phone && (
-            <div className="flex items-center gap-2">
-              <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-              <span>+238 {employee.phone}</span>
-            </div>
-          )}
-          {employee.email && (
-            <div className="flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-              <span className="truncate">{employee.email}</span>
-            </div>
-          )}
-        </div>
+        {(formattedPhone || employee.email) && (
+          <div className="flex flex-col gap-1 border-t border-slate-100 pt-2 text-xs text-slate-600">
+            {formattedPhone && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span>{formattedPhone}</span>
+              </div>
+            )}
+            {employee.email && (
+              <div className="flex items-center gap-2">
+                <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span className="truncate">{employee.email}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Assigned Services Tags */}
         <div className="border-t border-slate-100 pt-2">
@@ -252,23 +298,19 @@ export function EmployeeCard({
         {/* Colaborador: Avatar, Nome, Telefone, Email */}
         <td className="py-4 pl-4 pr-3 align-middle">
           <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-                isOwner
-                  ? "bg-teal-100 text-teal-800 ring-2 ring-teal-600/30"
-                  : "bg-slate-100 text-slate-700",
-              )}
-            >
-              {employee.displayName.slice(0, 2).toUpperCase()}
-            </div>
+            <EmployeeAvatar
+              displayName={employee.displayName}
+              avatarUrl={employee.avatarUrl}
+              isOwner={isOwner}
+              sizeClass="h-10 w-10 text-xs"
+            />
             <div className="min-w-0">
               <div className="font-semibold text-slate-900 text-sm truncate">
                 {employee.displayName}
               </div>
               <div className="text-xs text-slate-500 flex items-center gap-2">
-                {employee.phone && <span>+238 {employee.phone}</span>}
-                {employee.phone && employee.email && <span>•</span>}
+                {formattedPhone && <span>{formattedPhone}</span>}
+                {formattedPhone && employee.email && <span>•</span>}
                 {employee.email && <span className="truncate max-w-[150px]">{employee.email}</span>}
               </div>
             </div>
@@ -293,7 +335,7 @@ export function EmployeeCard({
         <td className="px-3 py-4 align-middle">
           <div className="flex flex-col">
             <span className="font-medium text-slate-900 text-sm">
-              {employee.role || "Especialista"}
+              {employee.specialty || "Especialista"}
             </span>
             <div className="flex items-center gap-1 text-xs text-amber-600 font-semibold mt-0.5">
               <Star className="h-3 w-3 fill-amber-500 text-amber-500" />

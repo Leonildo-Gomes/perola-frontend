@@ -58,7 +58,8 @@ export interface SalonEmployeeSummary {
   id: string;
   businessId: string;
   displayName: string;
-  role?: string;
+  specialty?: string | null;
+  accessRole?: "OWNER" | "EMPLOYEE";
   avatarUrl?: string | null;
   isActive: boolean;
   assignedServiceIds?: string[];

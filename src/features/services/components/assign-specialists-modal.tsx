@@ -151,7 +151,7 @@ export function AssignSpecialistsModal({
                           {employee.displayName}
                         </p>
                         <p className="truncate text-xs text-slate-500">
-                          {employee.role || "Especialista"}
+                          {employee.specialty || "Especialista"}
                         </p>
                       </div>
                     </div>
