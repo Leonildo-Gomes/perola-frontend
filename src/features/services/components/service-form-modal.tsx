@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -17,14 +17,15 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  SERVICE_CATEGORIES,
-  type SalonService,
-} from "../types/service.types";
+import { useCategories } from "@/features/marketplace/hooks/use-categories";
+import type { SalonService } from "../types/service.types";
 import {
   serviceFormSchema,
   type ServiceFormValues,
@@ -46,6 +47,8 @@ interface ServiceFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   serviceToEdit?: SalonService | null;
+  /** Category IDs associated with the current salon (ordered with primary first). */
+  businessCategoryIds?: string[];
   onSubmit: (values: ServiceFormValues) => Promise<void>;
 }
 
@@ -53,9 +56,28 @@ export function ServiceFormModal({
   open,
   onOpenChange,
   serviceToEdit,
+  businessCategoryIds = [],
   onSubmit,
 }: ServiceFormModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+
+  const { salonCategories, otherCategories } = useMemo(() => {
+    const salonSet = new Set(businessCategoryIds);
+    const inSalon = categories
+      .filter((c) => salonSet.has(c.id))
+      .sort(
+        (a, b) =>
+          businessCategoryIds.indexOf(a.id) - businessCategoryIds.indexOf(b.id),
+      );
+    const others = categories.filter((c) => !salonSet.has(c.id));
+    return { salonCategories: inSalon, otherCategories: others };
+  }, [categories, businessCategoryIds]);
+
+  const defaultCategoryId = useMemo(
+    () => salonCategories[0]?.id || categories[0]?.id || "",
+    [salonCategories, categories],
+  );
 
   const {
     register,
@@ -68,37 +90,47 @@ export function ServiceFormModal({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
       name: "",
-      category: "CABELO",
+      categoryId: "",
       durationMinutes: 45,
       price: 2000,
       description: "",
     },
   });
 
-  const selectedCategory = watch("category");
+  const selectedCategoryId = watch("categoryId");
   const selectedDuration = watch("durationMinutes");
 
   useEffect(() => {
-    if (open) {
-      if (serviceToEdit) {
-        reset({
-          name: serviceToEdit.name,
-          category: serviceToEdit.category || "CABELO",
-          durationMinutes: serviceToEdit.durationMinutes,
-          price: serviceToEdit.price,
-          description: serviceToEdit.description || "",
-        });
-      } else {
-        reset({
-          name: "",
-          category: "CABELO",
-          durationMinutes: 45,
-          price: 2000,
-          description: "",
-        });
-      }
+    if (!open) return;
+
+    if (serviceToEdit) {
+      const matchedId =
+        serviceToEdit.categoryId ||
+        categories.find(
+          (c) =>
+            c.slug === serviceToEdit.categorySlug ||
+            c.name === serviceToEdit.categoryName ||
+            c.slug === serviceToEdit.category?.toLowerCase(),
+        )?.id ||
+        defaultCategoryId;
+
+      reset({
+        name: serviceToEdit.name,
+        categoryId: matchedId,
+        durationMinutes: serviceToEdit.durationMinutes,
+        price: serviceToEdit.price,
+        description: serviceToEdit.description || "",
+      });
+    } else {
+      reset({
+        name: "",
+        categoryId: defaultCategoryId,
+        durationMinutes: 45,
+        price: 2000,
+        description: "",
+      });
     }
-  }, [open, serviceToEdit, reset]);
+  }, [open, serviceToEdit, defaultCategoryId, categories, reset]);
 
   const onFormSubmit = async (data: ServiceFormValues) => {
     try {
@@ -149,7 +181,7 @@ export function ServiceFormModal({
             )}
           </div>
 
-          {/* Categoria */}
+          {/* Categoria Dinâmica (UUID) */}
           <div className="space-y-1.5">
             <label
               htmlFor="service-category"
@@ -158,23 +190,57 @@ export function ServiceFormModal({
               Categoria <span className="text-rose-500">*</span>
             </label>
             <Select
-              value={selectedCategory}
-              onValueChange={(val) => setValue("category", val, { shouldValidate: true })}
-              disabled={isSubmitting}
+              value={selectedCategoryId}
+              onValueChange={(val) =>
+                setValue("categoryId", val, { shouldValidate: true })
+              }
+              disabled={isSubmitting || categoriesLoading}
             >
               <SelectTrigger id="service-category" className="h-11 rounded-xl">
-                <SelectValue placeholder="Selecione a categoria" />
+                <SelectValue
+                  placeholder={
+                    categoriesLoading
+                      ? "A carregar categorias..."
+                      : "Selecione a categoria"
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
-                {SERVICE_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
+                {salonCategories.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel className="text-[11px] font-bold uppercase tracking-wider text-perola-deep">
+                      Categorias do Salão
+                    </SelectLabel>
+                    {salonCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+
+                {salonCategories.length > 0 && otherCategories.length > 0 && (
+                  <SelectSeparator />
+                )}
+
+                {otherCategories.length > 0 && (
+                  <SelectGroup>
+                    {salonCategories.length > 0 && (
+                      <SelectLabel className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Outras Categorias
+                      </SelectLabel>
+                    )}
+                    {otherCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
               </SelectContent>
             </Select>
-            {errors.category && (
-              <p className="text-xs text-rose-600">{errors.category.message}</p>
+            {errors.categoryId && (
+              <p className="text-xs text-rose-600">{errors.categoryId.message}</p>
             )}
           </div>
 
@@ -191,7 +257,9 @@ export function ServiceFormModal({
               <Select
                 value={selectedDuration ? String(selectedDuration) : "45"}
                 onValueChange={(val) =>
-                  setValue("durationMinutes", Number(val), { shouldValidate: true })
+                  setValue("durationMinutes", Number(val), {
+                    shouldValidate: true,
+                  })
                 }
                 disabled={isSubmitting}
               >
@@ -207,7 +275,9 @@ export function ServiceFormModal({
                 </SelectContent>
               </Select>
               {errors.durationMinutes && (
-                <p className="text-xs text-rose-600">{errors.durationMinutes.message}</p>
+                <p className="text-xs text-rose-600">
+                  {errors.durationMinutes.message}
+                </p>
               )}
             </div>
 
@@ -230,7 +300,7 @@ export function ServiceFormModal({
                   disabled={isSubmitting}
                   className="h-11 rounded-xl pr-14"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 pointer-events-none">
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
                   CVE
                 </span>
               </div>
@@ -254,10 +324,12 @@ export function ServiceFormModal({
               placeholder="Descreva detalhes como lavagem incluída, produtos utilizados, etc."
               {...register("description")}
               disabled={isSubmitting}
-              className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600 disabled:opacity-50 resize-none"
+              className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600 disabled:opacity-50"
             />
             {errors.description && (
-              <p className="text-xs text-rose-600">{errors.description.message}</p>
+              <p className="text-xs text-rose-600">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -275,7 +347,7 @@ export function ServiceFormModal({
               type="submit"
               variant="brand"
               disabled={isSubmitting}
-              className="rounded-xl min-w-[120px]"
+              className="min-w-[120px] rounded-xl"
             >
               {isSubmitting ? (
                 <>
@@ -294,4 +366,3 @@ export function ServiceFormModal({
     </Dialog>
   );
 }
-

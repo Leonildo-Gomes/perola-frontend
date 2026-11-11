@@ -2,12 +2,18 @@
 
 import { Calendar, CheckCircle2, MapPin, MessageCircle, RefreshCw, Sparkles, Star } from "lucide-react";
 
+interface PreviewCategory {
+  name: string;
+  isPrimary: boolean;
+}
+
 interface BusinessPreviewCardProps {
   name: string;
   island: string;
   city: string;
   location: string;
   phone: string;
+  categories?: PreviewCategory[];
 }
 
 export function BusinessPreviewCard({
@@ -16,7 +22,11 @@ export function BusinessPreviewCard({
   city,
   location,
   phone,
+  categories = [],
 }: BusinessPreviewCardProps) {
+  const orderedCategories = [...categories].sort(
+    (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
+  );
   const displayName = name.trim() || "Salão Pérola VIP";
   const displayLocation = location.trim() || "Rua Pedonal do Plateau";
   const displayCity = city.trim() || "Praia";
@@ -87,15 +97,30 @@ export function BusinessPreviewCard({
 
           {/* Category Tags */}
           <div className="flex flex-wrap gap-1.5">
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700">
-              Cabelos & Tranças
-            </span>
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700">
-              Unhas & Gel
-            </span>
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700">
-              Barbearia VIP
-            </span>
+            {orderedCategories.length > 0 ? (
+              orderedCategories.map((cat) => (
+                <span
+                  key={cat.name}
+                  className={
+                    cat.isPrimary
+                      ? "inline-flex items-center gap-1 rounded-lg border border-perola-deep/30 bg-perola-mint/70 px-2.5 py-1 text-[11px] font-bold text-perola-deep"
+                      : "rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
+                  }
+                >
+                  {cat.isPrimary && (
+                    <Star
+                      className="h-3 w-3 fill-perola-deep text-perola-deep"
+                      aria-hidden
+                    />
+                  )}
+                  {cat.name}
+                </span>
+              ))
+            ) : (
+              <span className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] italic text-slate-400">
+                Nenhuma categoria selecionada
+              </span>
+            )}
           </div>
 
           {/* Official WhatsApp Contact Widget */}

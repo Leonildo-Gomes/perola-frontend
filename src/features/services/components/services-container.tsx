@@ -51,6 +51,8 @@ import { serviceKeys } from "../queries/service.keys";
 import { useChangeServiceStatus, useCreateService, useUpdateService } from "../hooks/use-service-mutations";
 import { useEmployees } from "@/features/employees/hooks/use-employees";
 import { employeeKeys } from "@/features/employees/queries/employee.keys";
+import { useCategories } from "@/features/marketplace/hooks/use-categories";
+import { useBusinessSettings } from "@/features/settings/hooks/use-settings";
 
 export function ServicesContainer() {
   const queryClient = useQueryClient();
@@ -78,9 +80,19 @@ export function ServicesContainer() {
 
   const createServiceMutation = useCreateService(businessId);
   const employeesQuery = useEmployees(businessId);
+  const { data: globalCategories = [] } = useCategories();
+  const { data: business } = useBusinessSettings(businessId);
 
   const services = useMemo(() => data ?? [], [data]);
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
+
+  // Salon category IDs ordered with primary first
+  const businessCategoryIds = useMemo(() => {
+    const bizCats = business?.categories ?? [];
+    return [...bizCats]
+      .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary))
+      .map((c) => c.id);
+  }, [business]);
 
   // Derived KPI metrics
   const kpis = useMemo(() => {
@@ -104,28 +116,48 @@ export function ServicesContainer() {
     };
   }, [services, employees]);
 
-  // Category counts
-  const categoryCounts = useMemo(() => {
+  // Dynamic category counts and tabs
+  const { categoryCounts, categoryTabs } = useMemo(() => {
     const counts: Record<string, number> = { ALL: services.length };
+    const nameMap = new Map<string, string>();
+
+    for (const c of globalCategories) {
+      nameMap.set(c.id, c.name);
+    }
+
     services.forEach((s) => {
-      const cat = (s.category || "OUTRO").toUpperCase();
-      counts[cat] = (counts[cat] || 0) + 1;
+      const key = s.categoryId || s.category || "OUTRO";
+      counts[key] = (counts[key] || 0) + 1;
+      if (s.categoryId && s.categoryName && !nameMap.has(s.categoryId)) {
+        nameMap.set(s.categoryId, s.categoryName);
+      }
     });
-    return counts;
-  }, [services]);
+
+    const tabs = Array.from(Object.keys(counts))
+      .filter((key) => key !== "ALL" && (counts[key] > 0 || selectedCategory === key))
+      .map((key) => ({
+        id: key,
+        label: nameMap.get(key) || key,
+        count: counts[key] || 0,
+      }));
+
+    return { categoryCounts: counts, categoryTabs: tabs };
+  }, [services, globalCategories, selectedCategory]);
 
   // Filtered services
   const filteredServices = useMemo(() => {
     return services.filter((s) => {
+      const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
-        searchQuery.trim() === "" ||
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.description && s.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (s.category && s.category.toLowerCase().includes(searchQuery.toLowerCase()));
+        q === "" ||
+        s.name.toLowerCase().includes(q) ||
+        (s.description && s.description.toLowerCase().includes(q)) ||
+        (s.categoryName && s.categoryName.toLowerCase().includes(q)) ||
+        (s.category && s.category.toLowerCase().includes(q));
 
+      const serviceCatKey = s.categoryId || s.category || "OUTRO";
       const matchesCategory =
-        selectedCategory === "ALL" ||
-        (s.category && s.category.toUpperCase() === selectedCategory.toUpperCase());
+        selectedCategory === "ALL" || serviceCatKey === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -209,7 +241,7 @@ export function ServicesContainer() {
         serviceId: serviceToEdit.id,
         payload: {
           name: values.name,
-          category: values.category,
+          categoryId: values.categoryId,
           durationMinutes: values.durationMinutes,
           price: values.price,
           description: values.description || undefined,
@@ -218,7 +250,7 @@ export function ServicesContainer() {
     } else {
       await createServiceMutation.mutateAsync({
         name: values.name,
-        category: values.category,
+        categoryId: values.categoryId,
         durationMinutes: values.durationMinutes,
         price: values.price,
         description: values.description || undefined,
@@ -408,31 +440,19 @@ export function ServicesContainer() {
           >
             Todos ({categoryCounts.ALL || 0})
           </button>
-          {["CABELO", "UNHAS", "BARBEARIA", "ESTETICA", "MASSAGEM", "OUTRO"].map((cat) => {
-            const count = categoryCounts[cat] || 0;
-            if (count === 0 && selectedCategory !== cat) return null;
-            const labels: Record<string, string> = {
-              CABELO: "Cabelo",
-              UNHAS: "Unhas",
-              BARBEARIA: "Barbearia",
-              ESTETICA: "Estética",
-              MASSAGEM: "Massagem",
-              OUTRO: "Outro",
-            };
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${selectedCategory === cat
-                  ? "bg-teal-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-              >
-                {labels[cat] || cat} ({count})
-              </button>
-            );
-          })}
+          {categoryTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setSelectedCategory(tab.id)}
+              className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${selectedCategory === tab.id
+                ? "bg-teal-600 text-white shadow-sm"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
         </div>
       </div>
 
@@ -551,6 +571,7 @@ export function ServicesContainer() {
         open={isFormModalOpen}
         onOpenChange={setIsFormModalOpen}
         serviceToEdit={serviceToEdit}
+        businessCategoryIds={businessCategoryIds}
         onSubmit={handleFormSubmit}
       />
 

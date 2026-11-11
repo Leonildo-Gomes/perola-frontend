@@ -13,12 +13,14 @@ import {
   Store,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { PhoneInputCV } from "@/features/auth/components";
 import { Button } from "@/components/ui/button";
+import { useCategories } from "@/features/marketplace/hooks/use-categories";
 import { createBusiness } from "@/features/settings/api/settings.api";
+import { BusinessCategoriesSelector } from "@/features/settings/components/business-categories-selector";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/utils/geography";
 import {
   type CreateBusinessFormValues,
@@ -30,6 +32,7 @@ import { BusinessPreviewCard } from "./business-preview-card";
 
 export function BusinessOnboardingForm() {
   const router = useRouter();
+  const { data: allCategories = [] } = useCategories();
 
   const {
     register,
@@ -46,6 +49,7 @@ export function BusinessOnboardingForm() {
       city: "Praia",
       location: "",
       phone: "",
+      categories: [],
     },
     mode: "onChange",
   });
@@ -53,6 +57,17 @@ export function BusinessOnboardingForm() {
   const watchedValues = watch();
   const selectedIsland = watch("island");
   const availableCities = ISLAND_CITIES[selectedIsland] || [];
+
+  const previewCategories = useMemo(
+    () =>
+      (watchedValues.categories ?? [])
+        .map((sel) => {
+          const found = allCategories.find((c) => c.id === sel.categoryId);
+          return found ? { name: found.name, isPrimary: sel.isPrimary } : null;
+        })
+        .filter((x): x is { name: string; isPrimary: boolean } => x !== null),
+    [watchedValues.categories, allCategories],
+  );
 
   // Whenever the island changes, update the city to the first city of that island
   useEffect(() => {
@@ -70,6 +85,7 @@ export function BusinessOnboardingForm() {
         location: data.location,
         contactPhone: `+238${data.phone}`,
         timezone: "Atlantic/Cape_Verde",
+        categories: data.categories,
       });
     },
     onSuccess: (business) => {
@@ -259,7 +275,26 @@ export function BusinessOnboardingForm() {
             )}
           </div>
 
-          {/* 5. Fuso Horário Notice Card */}
+          {/* 5. Categorias do Salão (Espaços Mistos) */}
+          <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-slate-800">
+              Áreas de Atuação / Categorias <span className="text-rose-500">*</span>
+            </label>
+            <Controller
+              name="categories"
+              control={control}
+              render={({ field }) => (
+                <BusinessCategoriesSelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={mutation.isPending}
+                  error={errors.categories?.message}
+                />
+              )}
+            />
+          </div>
+
+          {/* 6. Fuso Horário Notice Card */}
           <div className="rounded-xl border border-perola-deep/20 bg-perola-mint/30 p-4 flex gap-3 items-start text-xs">
             <Clock className="h-5 w-5 text-perola-deep shrink-0 mt-0.5" />
             <div className="space-y-0.5">
@@ -307,6 +342,7 @@ export function BusinessOnboardingForm() {
           city={watchedValues.city}
           location={watchedValues.location}
           phone={watchedValues.phone}
+          categories={previewCategories}
         />
       </div>
     </div>

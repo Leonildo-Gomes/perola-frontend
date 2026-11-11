@@ -1,7 +1,28 @@
-/** `ServiceResponse` (API.md). Optional fields are display extensions the backend may add later. */
+/** `CategoryResponse` (API.md). */
+export interface MarketplaceCategory {
+  id: string;
+  slug: string;
+  name: string;
+  icon?: string | null;
+  displayOrder: number;
+}
+
+/** `BusinessCategoryResponse` (API.md). */
+export interface BusinessCategorySummary {
+  id: string;
+  slug: string;
+  name: string;
+  icon?: string | null;
+  isPrimary: boolean;
+}
+
+/** `ServiceResponse` (API.md). */
 export interface MarketplaceService {
   id: string;
   businessId: string;
+  categoryId?: string;
+  categorySlug?: string;
+  categoryName?: string;
   name: string;
   description?: string;
   durationMinutes: number;
@@ -27,6 +48,7 @@ export interface MarketplaceBusiness {
   location: string;
   contactPhone: string;
   timezone: string;
+  categories?: BusinessCategorySummary[];
   isActive: boolean;
   createdAt: string;
 }
@@ -37,4 +59,3 @@ export interface MarketplaceFilters {
   island?: string | null;
   city?: string | null;
 }
-

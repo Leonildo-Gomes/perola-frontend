@@ -43,9 +43,9 @@ export function ServiceListItem({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-bold text-slate-900 text-base">{service.name}</span>
-              {service.category && (
+              {(service.categoryName || service.category) && (
                 <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
-                  {service.category}
+                  {service.categoryName || service.category}
                 </Badge>
               )}
             </div>
@@ -168,7 +168,7 @@ export function ServiceListItem({
         {/* Category */}
         <td className="px-3 py-4 align-middle">
           <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
-            {service.category || "Geral"}
+            {service.categoryName || service.category || "Geral"}
           </Badge>
         </td>
 

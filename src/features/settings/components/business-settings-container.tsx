@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,7 +19,6 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhoneInputCV } from "@/features/auth/components";
+import { useCategories } from "@/features/marketplace/hooks/use-categories";
 import { BusinessPreviewCard } from "@/components/admin/onboarding/business-preview-card";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/utils/geography";
 import {
@@ -36,14 +35,14 @@ import {
 } from "../schemas/settings.schema";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
-import type { BusinessResponse } from "../types/settings.types";
 import { useBusinessSettings } from "../hooks/use-settings";
 import { useChangeBusinessStatus, useUpdateBusinessSettings } from "../hooks/use-settings-mutations";
+import { BusinessCategoriesSelector } from "./business-categories-selector";
 
 export function BusinessSettingsContainer() {
-  const user = useAuthStore((s) => s.user);
   const memberships = useAuthStore((s) => s.memberships);
   const activeTenantId = useTenantStore((s) => s.activeBusinessId);
+  const { data: allCategories = [] } = useCategories();
 
   const businessId = activeTenantId || memberships[0]?.businessId || "";
 
@@ -72,6 +71,7 @@ export function BusinessSettingsContainer() {
       location: "",
       phone: "",
       isActive: true,
+      categories: [],
     },
     mode: "onChange",
   });
@@ -92,6 +92,10 @@ export function BusinessSettingsContainer() {
         location: business.location || "",
         phone: extractPhoneDigits(business.contactPhone || ""),
         isActive: business.isActive ?? true,
+        categories: (business.categories ?? []).map((c) => ({
+          categoryId: c.id,
+          isPrimary: c.isPrimary,
+        })),
       });
     }
   }, [business, reset]);
@@ -100,6 +104,17 @@ export function BusinessSettingsContainer() {
   const selectedIsland = watch("island");
   const availableCities = ISLAND_CITIES[selectedIsland] || [];
   const isActive = watch("isActive");
+
+  const previewCategories = useMemo(
+    () =>
+      (watchedValues.categories ?? [])
+        .map((sel) => {
+          const found = allCategories.find((c) => c.id === sel.categoryId);
+          return found ? { name: found.name, isPrimary: sel.isPrimary } : null;
+        })
+        .filter((x): x is { name: string; isPrimary: boolean } => x !== null),
+    [watchedValues.categories, allCategories],
+  );
 
   // Keep city aligned if island changes
   useEffect(() => {
@@ -122,6 +137,7 @@ export function BusinessSettingsContainer() {
       location: data.location,
       contactPhone: `+238${data.phone}`,
       isActive: data.isActive,
+      categories: data.categories,
     });
     reset({
       name: updated.name,
@@ -130,6 +146,10 @@ export function BusinessSettingsContainer() {
       location: updated.location,
       phone: extractPhoneDigits(updated.contactPhone),
       isActive: updated.isActive,
+      categories: (updated.categories ?? data.categories).map((c) => ({
+        categoryId: "id" in c ? c.id : c.categoryId,
+        isPrimary: c.isPrimary,
+      })),
     });
   };
 
@@ -333,6 +353,25 @@ export function BusinessSettingsContainer() {
                   Utilizado para notificações operacionais e contacto direto dos clientes.
                 </p>
               </div>
+
+              {/* Categorias (Espaços Mistos) */}
+              <div className="space-y-2 pt-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                  Áreas de Atuação / Categorias <span className="text-teal-600">*</span>
+                </label>
+                <Controller
+                  name="categories"
+                  control={control}
+                  render={({ field }) => (
+                    <BusinessCategoriesSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={updateMutation.isPending}
+                      error={errors.categories?.message}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             {/* 3. Localização em Cabo Verde */}
@@ -472,6 +511,7 @@ export function BusinessSettingsContainer() {
             city={watchedValues.city}
             location={watchedValues.location}
             phone={watchedValues.phone}
+            categories={previewCategories}
           />
         </div>
       </div>

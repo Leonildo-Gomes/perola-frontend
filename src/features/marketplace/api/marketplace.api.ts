@@ -2,6 +2,7 @@ import { api } from "@/lib/api/client";
 import type { Page } from "@/types/api.types";
 import type {
   MarketplaceBusiness,
+  MarketplaceCategory,
   MarketplaceFilters,
   MarketplaceService,
 } from "../types/marketplace.types";
@@ -12,8 +13,24 @@ export const SERVICES_PAGE_SIZE = 12;
 const PUBLIC = { skipAuth: true, tenant: false } as const;
 
 /**
- * The real backend filters by `query`, `island` and `city` (verified). `category` is sent too but
- * is currently ignored. Each service carries `businessName/businessIsland/businessCity`.
+ * List active beauty & wellness categories ordered by `displayOrder` (`GET /api/v1/marketplace/categories`).
+ */
+export async function getMarketplaceCategories(
+  signal?: AbortSignal,
+): Promise<MarketplaceCategory[]> {
+  const res = await api.get<
+    MarketplaceCategory[] | Page<MarketplaceCategory>
+  >("/api/v1/marketplace/categories", {
+    ...PUBLIC,
+    signal,
+  });
+
+  const list = Array.isArray(res) ? res : res?.content ?? [];
+  return [...list].sort((a, b) => a.displayOrder - b.displayOrder);
+}
+
+/**
+ * Search and filter active marketplace services (`GET /api/v1/marketplace/services`).
  */
 export const searchServices = (
   filters: MarketplaceFilters,
@@ -33,8 +50,11 @@ export const searchServices = (
     },
   });
 
+/**
+ * Search and filter active marketplace businesses (`GET /api/v1/marketplace/businesses`).
+ */
 export const searchBusinesses = (
-  filters: Pick<MarketplaceFilters, "query" | "island" | "city">,
+  filters: MarketplaceFilters,
   signal?: AbortSignal,
 ) =>
   api.get<Page<MarketplaceBusiness>>("/api/v1/marketplace/businesses", {
@@ -42,10 +62,10 @@ export const searchBusinesses = (
     signal,
     query: {
       query: filters.query,
+      category: filters.category,
       island: filters.island,
       city: filters.city,
       page: 0,
       size: 100,
     },
   });
-

@@ -133,7 +133,7 @@ export function AssignEmployeeServicesModal({
                           {service.name}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {formatDuration(service.durationMinutes)} • {service.category || "Geral"}
+                          {formatDuration(service.durationMinutes)} • {service.categoryName || service.category || "Geral"}
                         </p>
                       </div>
                     </div>

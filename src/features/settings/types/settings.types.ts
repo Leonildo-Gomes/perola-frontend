@@ -1,3 +1,16 @@
+export interface BusinessCategoryItemRequest {
+  categoryId: string;
+  isPrimary: boolean;
+}
+
+export interface BusinessCategoryResponse {
+  id: string;
+  slug: string;
+  name: string;
+  icon?: string | null;
+  isPrimary: boolean;
+}
+
 export interface CreateBusinessPayload {
   name: string;
   island: string;
@@ -5,6 +18,7 @@ export interface CreateBusinessPayload {
   location: string;
   contactPhone: string;
   timezone?: string;
+  categories: BusinessCategoryItemRequest[];
 }
 
 export interface UpdateBusinessPayload {
@@ -15,6 +29,7 @@ export interface UpdateBusinessPayload {
   contactPhone?: string;
   timezone?: string;
   isActive?: boolean;
+  categories?: BusinessCategoryItemRequest[];
 }
 
 export interface BusinessResponse {
@@ -26,8 +41,8 @@ export interface BusinessResponse {
   location: string;
   contactPhone: string;
   timezone: string;
+  categories?: BusinessCategoryResponse[];
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
 }
-

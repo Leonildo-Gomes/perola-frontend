@@ -7,8 +7,8 @@ import { useCallback, useMemo } from "react";
 import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { useLocationHydrated } from "@/hooks/use-location-hydrated";
+import { useCategories } from "../hooks/use-categories";
 import { useMarketplaceInfiniteServices } from "../hooks/use-marketplace-services";
-import { SERVICE_CATEGORIES } from "@/lib/utils/categories";
 import { useLocationStore } from "@/stores/location-store";
 import type { MarketplaceFilters } from "../types/marketplace.types";
 import { LocationFilter } from "./location-filter";
@@ -66,8 +66,11 @@ export function ServiceFeed({ variant = "explore" }: ServiceFeedProps) {
     router.push("/explore");
   };
 
+  const { data: categories = [] } = useCategories();
   const isLoading = !hydrated || services.isPending;
-  const categoryLabel = SERVICE_CATEGORIES.find((c) => c.slug === category)?.label;
+  const categoryLabel = categories.find(
+    (c) => c.slug === category || c.id === category,
+  )?.name;
   const total = services.data?.pages[0]?.totalElements;
   const heading =
     variant === "home" ? (
