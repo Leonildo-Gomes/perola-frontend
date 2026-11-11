@@ -3,6 +3,9 @@ export type UserRole = "CUSTOMER" | "OWNER" | "EMPLOYEE" | "ADMIN";
 /** Role a user holds inside a specific business (tenant). */
 export type BusinessRole = "OWNER" | "EMPLOYEE";
 
+/** Current active UI context for multi-profile users. */
+export type ActivePersona = "CUSTOMER" | "BUSINESS";
+
 export interface BusinessMembership {
   businessId: string;
   role: BusinessRole;

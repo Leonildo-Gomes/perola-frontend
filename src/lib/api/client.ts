@@ -44,6 +44,7 @@ const ADMIN_PREFIXES = [
   "/dashboard",
   "/schedule",
   "/services",
+  "/employee",
   "/team",
   "/availability",
   "/settings",

@@ -4,7 +4,12 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { getQueryClient } from "@/lib/react-query/query-client";
 import type { TokenPair } from "@/types/api.types";
-import type { AuthResponse, BusinessMembership, UserProfile } from "@/features/auth/types/auth.types";
+import type {
+  ActivePersona,
+  AuthResponse,
+  BusinessMembership,
+  UserProfile,
+} from "@/features/auth/types/auth.types";
 import { authStorage, setRememberSession } from "./auth-storage";
 import { useTenantStore } from "./tenant-store";
 
@@ -13,11 +18,14 @@ interface AuthState {
   refreshToken: string | null;
   user: UserProfile | null;
   memberships: BusinessMembership[];
+  activePersona: ActivePersona;
   isAuthenticated: boolean;
   login: (response: AuthResponse, remember?: boolean) => void;
+  setActivePersona: (persona: ActivePersona) => void;
   setTokens: (tokens: TokenPair) => void;
   updateUser: (user: Partial<UserProfile>) => void;
   addMembership: (membership: BusinessMembership) => void;
+  updateMembershipName: (businessId: string, businessName: string) => void;
   logout: () => void;
 }
 
@@ -30,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       user: null,
       memberships: [],
+      activePersona: "CUSTOMER",
       isAuthenticated: false,
       login: ({ accessToken, refreshToken, user }, remember = true) => {
         setRememberSession(remember);
@@ -39,7 +48,15 @@ export const useAuthStore = create<AuthState>()(
           role: b.role,
           businessName: b.businessName,
         }));
-        set({ accessToken, refreshToken, user: profile, memberships, isAuthenticated: true });
+        const defaultPersona: ActivePersona = memberships.length > 0 ? "BUSINESS" : "CUSTOMER";
+        set({
+          accessToken,
+          refreshToken,
+          user: profile,
+          memberships,
+          activePersona: defaultPersona,
+          isAuthenticated: true,
+        });
 
         // Keep the active tenant only if the user still belongs to it; otherwise pick the first.
         const tenant = useTenantStore.getState();
@@ -48,6 +65,7 @@ export const useAuthStore = create<AuthState>()(
         if (next) tenant.setActiveBusiness(next.businessId, next.businessName ?? null, next.role);
         else tenant.clearActiveBusiness();
       },
+      setActivePersona: (activePersona) => set({ activePersona }),
       setTokens: ({ accessToken, refreshToken }) => set({ accessToken, refreshToken }),
       updateUser: (patch) => set((s) => (s.user ? { user: { ...s.user, ...patch } } : s)),
       addMembership: (membership) =>
@@ -56,8 +74,26 @@ export const useAuthStore = create<AuthState>()(
             ? s.memberships
             : [...s.memberships, membership],
         })),
+      updateMembershipName: (businessId, businessName) => {
+        set((s) => ({
+          memberships: s.memberships.map((m) =>
+            m.businessId === businessId ? { ...m, businessName } : m,
+          ),
+        }));
+        const tenant = useTenantStore.getState();
+        if (tenant.activeBusinessId === businessId && tenant.userRoleInBusiness) {
+          tenant.setActiveBusiness(businessId, businessName, tenant.userRoleInBusiness);
+        }
+      },
       logout: () => {
-        set({ accessToken: null, refreshToken: null, user: null, memberships: [], isAuthenticated: false });
+        set({
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+          memberships: [],
+          activePersona: "CUSTOMER",
+          isAuthenticated: false,
+        });
         useTenantStore.getState().clearActiveBusiness();
         const qc = getQueryClient();
         void qc.cancelQueries();
@@ -73,6 +109,7 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: s.refreshToken,
         user: s.user,
         memberships: s.memberships,
+        activePersona: s.activePersona,
         isAuthenticated: s.isAuthenticated,
       }),
     },

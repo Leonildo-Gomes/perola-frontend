@@ -84,6 +84,7 @@ export function BusinessOnboardingForm() {
         businessName: business.name,
         role: "OWNER",
       });
+      useAuthStore.getState().setActivePersona("BUSINESS");
 
       // Redirect to services or schedule configuration
       router.push("/schedule");

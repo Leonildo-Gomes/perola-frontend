@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth-store";
 import { changeBusinessStatus, createBusiness, updateBusiness } from "../api/settings.api";
 import { settingsKeys } from "../queries/settings.keys";
 import type {
@@ -33,7 +34,10 @@ export function useUpdateBusinessSettings(businessId: string) {
   return useMutation({
     mutationFn: (payload: UpdateBusinessPayload) =>
       updateBusiness(businessId, payload),
-    onSuccess: () => {
+    onSuccess: (updated) => {
+      if (updated?.name) {
+        useAuthStore.getState().updateMembershipName(businessId, updated.name);
+      }
       void queryClient.invalidateQueries({
         queryKey: settingsKeys.businessDetail(businessId),
       });

@@ -1,7 +1,15 @@
 "use client";
 
-import { Flower2, LifeBuoy, LogOut, MessageCircle, Plus } from "lucide-react";
+import {
+  Flower2,
+  LifeBuoy,
+  LogOut,
+  MessageCircle,
+  Plus,
+  UserRound,
+} from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/hooks/use-logout";
 import { useAuthStore } from "@/stores/auth-store";
@@ -15,11 +23,24 @@ interface AdminSidebarProps {
   onNavigate?: () => void;
 }
 
-export function AdminSidebar({ collapsed = false, onNavigate }: AdminSidebarProps) {
+export function AdminSidebar({
+  collapsed = false,
+  onNavigate,
+}: AdminSidebarProps) {
+  const router = useRouter();
   const logout = useLogout();
   const memberships = useAuthStore((s) => s.memberships);
+  const setActivePersona = useAuthStore((s) => s.setActivePersona);
   const activeId = useTenantStore((s) => s.activeBusinessId);
-  const businessName = memberships.find((m) => m.businessId === activeId)?.businessName ?? "O meu salão";
+  const businessName =
+    memberships.find((m) => m.businessId === activeId)?.businessName ??
+    "O meu salão";
+
+  const handleSwitchToCustomer = () => {
+    setActivePersona("CUSTOMER");
+    onNavigate?.();
+    router.push("/my-bookings");
+  };
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -28,12 +49,22 @@ export function AdminSidebar({ collapsed = false, onNavigate }: AdminSidebarProp
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-perola-mint text-perola-deep">
             <Flower2 className="h-5 w-5" aria-hidden />
           </span>
-          <span className="min-w-0 truncate text-sm font-bold text-slate-900">{businessName}</span>
+          <span className="min-w-0 truncate text-sm font-bold text-slate-900">
+            {businessName}
+          </span>
         </div>
       )}
 
-      <Button asChild variant="brand" className={collapsed ? "px-0" : "w-full rounded-xl"}>
-        <Link href="/schedule?new=1" onClick={onNavigate} aria-label="Novo Agendamento">
+      <Button
+        asChild
+        variant="brand"
+        className={collapsed ? "px-0" : "w-full rounded-xl"}
+      >
+        <Link
+          href="/schedule?new=1"
+          onClick={onNavigate}
+          aria-label="Novo Agendamento"
+        >
           <Plus className={collapsed ? "h-5 w-5" : "mr-2 h-5 w-5"} aria-hidden />
           {!collapsed && "Novo Agendamento"}
         </Link>
@@ -51,7 +82,9 @@ export function AdminSidebar({ collapsed = false, onNavigate }: AdminSidebarProp
           >
             <MessageCircle className="h-5 w-5" aria-hidden />
             <span className="flex flex-col leading-tight">
-              <span className="font-accent text-[10px] uppercase tracking-[0.14em] text-slate-500">Suporte local CV</span>
+              <span className="font-accent text-[10px] uppercase tracking-[0.14em] text-slate-500">
+                Suporte local CV
+              </span>
               +238 WhatsApp Direto
             </span>
           </a>
@@ -64,8 +97,19 @@ export function AdminSidebar({ collapsed = false, onNavigate }: AdminSidebarProp
         )}
         <button
           type="button"
+          onClick={handleSwitchToCustomer}
+          aria-label="Mudar para Modo Cliente"
+          title={collapsed ? "Modo Cliente" : undefined}
+          className="flex min-h-[48px] items-center gap-3 rounded-xl px-3.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-perola-deep"
+        >
+          <UserRound className="h-5 w-5 shrink-0" aria-hidden />
+          {!collapsed && "Modo Cliente"}
+        </button>
+        <button
+          type="button"
           onClick={logout}
           aria-label="Terminar sessão"
+          title={collapsed ? "Terminar Sessão" : undefined}
           className="flex min-h-[48px] items-center gap-3 rounded-xl px-3.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
         >
           <LogOut className="h-5 w-5 shrink-0" aria-hidden />
