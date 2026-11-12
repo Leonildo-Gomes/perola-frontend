@@ -4,6 +4,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname),
+  images: {
+    remotePatterns: [
+      { protocol: "http", hostname: "localhost" },
+      { protocol: "https", hostname: "**" },
+    ],
+  },
   // Same-origin proxy to the Spring Boot API: the browser calls /api/v1/* on the Next origin,
   // so no CORS is needed in dev. Set NEXT_PUBLIC_API_URL to bypass it (backend must then allow CORS).
   async rewrites() {
