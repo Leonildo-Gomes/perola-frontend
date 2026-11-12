@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { ImageUploadField } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -82,6 +83,7 @@ export function ServiceFormModal({
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     watch,
     reset,
@@ -94,6 +96,7 @@ export function ServiceFormModal({
       durationMinutes: 45,
       price: 2000,
       description: "",
+      imageUrl: null,
     },
   });
 
@@ -120,6 +123,7 @@ export function ServiceFormModal({
         durationMinutes: serviceToEdit.durationMinutes,
         price: serviceToEdit.price,
         description: serviceToEdit.description || "",
+        imageUrl: serviceToEdit.imageUrl ?? null,
       });
     } else {
       reset({
@@ -128,6 +132,7 @@ export function ServiceFormModal({
         durationMinutes: 45,
         price: 2000,
         description: "",
+        imageUrl: null,
       });
     }
   }, [open, serviceToEdit, defaultCategoryId, categories, reset]);
@@ -161,6 +166,22 @@ export function ServiceFormModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 pt-2">
+          <Controller
+            name="imageUrl"
+            control={control}
+            render={({ field }) => (
+              <ImageUploadField
+                scope="SERVICE_IMAGE"
+                label="Foto do Serviço"
+                description="Opcional. Mostra o resultado do serviço no Marketplace (JPEG, PNG ou WebP até 5 MB)."
+                value={field.value}
+                onChange={field.onChange}
+                aspect="video"
+                disabled={isSubmitting}
+              />
+            )}
+          />
+
           {/* Nome do Serviço */}
           <div className="space-y-1.5">
             <label

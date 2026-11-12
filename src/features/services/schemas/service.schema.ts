@@ -27,6 +27,7 @@ export const serviceFormSchema = z.object({
     .max(500, "A descrição não pode ter mais de 500 caracteres")
     .optional()
     .or(z.literal("")),
+  imageUrl: z.string().nullable().optional(),
 });
 
 export type ServiceFormValues = z.infer<typeof serviceFormSchema>;

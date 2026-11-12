@@ -26,6 +26,7 @@ export const employeeFormSchema = z.object({
     .email("Introduza um endereço de email válido")
     .optional()
     .or(z.literal("")),
+  avatarUrl: z.string().nullable().optional(),
   assignedServiceIds: z.array(z.string()).default([]),
 });
 

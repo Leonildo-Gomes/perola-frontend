@@ -153,6 +153,7 @@ export function EmployeesContainer() {
           accessRole: values.accessRole,
           phone: formattedPhone,
           email: values.email || undefined,
+          avatarUrl: values.avatarUrl ?? null,
           assignedServiceIds: values.assignedServiceIds,
         },
       });
@@ -163,6 +164,7 @@ export function EmployeesContainer() {
         accessRole: values.accessRole,
         phone: formattedPhone,
         email: values.email || undefined,
+        avatarUrl: values.avatarUrl ?? null,
         assignedServiceIds: values.assignedServiceIds,
       });
     }

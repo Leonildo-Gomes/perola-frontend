@@ -31,6 +31,7 @@ export interface SalonService {
   description?: string | null;
   durationMinutes: number;
   price: number;
+  imageUrl?: string | null;
   isActive: boolean;
   assignedEmployeeIds?: string[];
   createdAt?: string;
@@ -43,6 +44,7 @@ export interface CreateServicePayload {
   description?: string;
   durationMinutes: number;
   price: number;
+  imageUrl?: string | null;
 }
 
 export interface UpdateServicePayload {
@@ -51,6 +53,7 @@ export interface UpdateServicePayload {
   description?: string;
   durationMinutes?: number;
   price?: number;
+  imageUrl?: string | null;
   isActive?: boolean;
 }
 

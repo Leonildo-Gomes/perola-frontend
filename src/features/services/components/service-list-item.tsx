@@ -40,20 +40,30 @@ export function ServiceListItem({
       {/* Mobile Card Layout (< md) */}
       <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:hidden">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-bold text-slate-900 text-base">{service.name}</span>
-              {(service.categoryName || service.category) && (
-                <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
-                  {service.categoryName || service.category}
-                </Badge>
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {service.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={service.imageUrl}
+                alt={service.name}
+                className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 object-cover"
+              />
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-slate-900 text-base">{service.name}</span>
+                {(service.categoryName || service.category) && (
+                  <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
+                    {service.categoryName || service.category}
+                  </Badge>
+                )}
+              </div>
+              {service.description && (
+                <p className="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">
+                  {service.description}
+                </p>
               )}
             </div>
-            {service.description && (
-              <p className="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">
-                {service.description}
-              </p>
-            )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Switch
@@ -155,13 +165,23 @@ export function ServiceListItem({
       <tr className="hidden md:table-row border-b border-slate-100 hover:bg-slate-50/75 transition-colors">
         {/* Service Name & Category */}
         <td className="py-4 pl-4 pr-3 align-middle">
-          <div className="flex flex-col">
-            <span className="font-semibold text-slate-900 text-sm">{service.name}</span>
-            {service.description ? (
-              <span className="line-clamp-1 text-xs text-slate-500 max-w-xs">
-                {service.description}
-              </span>
+          <div className="flex items-center gap-3">
+            {service.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={service.imageUrl}
+                alt={service.name}
+                className="h-10 w-10 shrink-0 rounded-xl border border-slate-200 object-cover"
+              />
             ) : null}
+            <div className="flex flex-col">
+              <span className="font-semibold text-slate-900 text-sm">{service.name}</span>
+              {service.description ? (
+                <span className="line-clamp-1 text-xs text-slate-500 max-w-xs">
+                  {service.description}
+                </span>
+              ) : null}
+            </div>
           </div>
         </td>
 

@@ -17,6 +17,7 @@ import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { PhoneInputCV } from "@/features/auth/components";
+import { ImageUploadField } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/features/marketplace/hooks/use-categories";
 import { createBusiness } from "@/features/settings/api/settings.api";
@@ -49,6 +50,7 @@ export function BusinessOnboardingForm() {
       city: "Praia",
       location: "",
       phone: "",
+      logoUrl: null,
       categories: [],
     },
     mode: "onChange",
@@ -84,6 +86,7 @@ export function BusinessOnboardingForm() {
         city: data.city,
         location: data.location,
         contactPhone: `+238${data.phone}`,
+        logoUrl: data.logoUrl ?? null,
         timezone: "Atlantic/Cape_Verde",
         categories: data.categories,
       });
@@ -130,6 +133,21 @@ export function BusinessOnboardingForm() {
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5">
+          <Controller
+            name="logoUrl"
+            control={control}
+            render={({ field }) => (
+              <ImageUploadField
+                scope="BUSINESS_LOGO"
+                label="Logótipo ou Foto de Capa do Salão"
+                description="Opcional. Aparece no cartão do salão no Marketplace (JPEG, PNG ou WebP até 5 MB)."
+                value={field.value}
+                onChange={field.onChange}
+                aspect="video"
+              />
+            )}
+          />
+
           {/* 1. Nome Comercial */}
           <div>
             <label htmlFor="business-name" className="block text-xs font-bold text-slate-800 mb-1.5">
@@ -342,6 +360,7 @@ export function BusinessOnboardingForm() {
           city={watchedValues.city}
           location={watchedValues.location}
           phone={watchedValues.phone}
+          logoUrl={watchedValues.logoUrl}
           categories={previewCategories}
         />
       </div>

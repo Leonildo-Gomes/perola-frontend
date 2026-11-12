@@ -136,14 +136,15 @@ O projeto Google Stitch (`9636073377251149308`) contém **12 pares de telas (Mob
 ## 6. Matriz de Progresso e Estado das Tarefas (Implementation Waves)
 
 ```mermaid
-pie title Distribuição de Esforço Frontend (16 Tarefas)
+pie title Distribuição de Esforço Frontend (19 Tarefas)
     "Wave 0: Fundação & Setup" : 3
     "Wave 1: Layouts & Auth" : 2
     "Wave 2: Marketplace & Booking" : 2
     "Wave 3: Portal do Cliente" : 1
-    "Wave 4: Onboarding & Catálogo & Equipa" : 3
-    "Wave 5: Agenda, Escalas & Ausências" : 3
-    "Wave 6: Qualidade, WCAG & E2E" : 2
+    "Wave 4: Onboarding, Catálogo & Equipa" : 3
+    "Wave 5: Agenda, Escalas & Definições" : 4
+    "Wave 6: Evolução (Categorias, Equipa & Mídia)" : 3
+    "Wave 7: Qualidade, WCAG & E2E" : 1
 ```
 
 ### Quadro de Execução
@@ -166,7 +167,9 @@ pie title Distribuição de Esforço Frontend (16 Tarefas)
 | **`FE-014`** | Disponibilidade: Gestão de Ausências & Férias | Wave 5 | P1 (Alto) | 🟢 **Concluído & Validado** | `/(admin)/availability` (Aba Ausências: `TimeOffTab`, `TimeOffCard`, `TimeOffFormModal`, tipos de ausência, bloqueio de agenda, badge `FOLGA HOJE`) |
 | **`FE-015`** | Definições e Perfil do Salão (`/(admin)/settings`) | Wave 5 | P2 (Médio) | 🟢 **Concluído & Validado** | `/(admin)/settings` (Formulário, morada CV, switch de visibilidade pública `isActive`, `PhoneInputCV` +238, fuso `Atlantic/Cape_Verde`, live preview) |
 | **`FE-016`** | Categorias Dinâmicas, Espaços Mistos (`isPrimary`) e `categoryId` em Serviços | Wave 6 | P1 (Alto) | 🟢 **Concluído & Validado** | `useCategories` (`GET /marketplace/categories`, staleTime 1h), `BusinessCategoriesSelector` (`isPrimary`), `BusinessPreviewCard` dinâmico, `ServiceFormModal` (`categoryId` UUID ordenado pelo salão) e `CategoryPills` dinâmicas |
-| **`FE-017`** | Acessibilidade WCAG AA, Resiliência Offline & E2E | Wave 6 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-008`, `FE-012`, `FE-014`, `FE-015` |
+| **`FE-017`** | Exibição e Edição da Especialidade no Perfil do Funcionário (`specialty`) | Wave 6 | P1 (Alto) | 🟢 **Concluído & Validado** | `specialty` em `Employee`, `EmployeeFormModal`, `EmployeeCard` e Passo 1 do `BookingWizardContainer` (alinhado ao DTO do backend) |
+| **`FE-018`** | Componente `ImageUploadField` e Upload de Fotos (`USER_AVATAR`, `BUSINESS_LOGO`, `SERVICE_IMAGE`, `EMPLOYEE_AVATAR`) | Wave 6 | P1 (Alto) | 🟡 **Pronto p/ Início** | Upload `multipart/form-data` para `POST /api/v1/media/upload` e integração em Perfil, Salão, Serviços e Equipa |
+| **`FE-019`** | Acessibilidade WCAG AA, Resiliência Offline & E2E | Wave 7 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-008`, `FE-012`, `FE-014`, `FE-015` |
 
 > **Legenda de Estado:**  
 > ⚪ *Planeado* | 🟡 *Pronto p/ Início / Próximo Passo* | 🔵 *Em Desenvolvimento* | 🟢 *Concluído & Validado*
@@ -206,7 +209,9 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - **✅ `FE-014` concluída:** Disponibilidade: Gestão de Ausências & Férias (`/(admin)/availability` — Tab "Ausências" com `TimeOffTab`, `TimeOffCard`, `TimeOffFormModal`, badges por tipo, indicador pulsante `FOLGA HOJE`, filtros por próximas/histórico, diálogo de confirmação de exclusão e alerta proativo de impacto).
    - **✅ `FE-015` concluída:** Definições e Perfil do Salão (`/(admin)/settings` com `BusinessSettingsContainer`, dados institucionais, dropdowns de Ilha→Concelho de Cabo Verde, `PhoneInputCV` com prefixo +238, fuso constante `Atlantic/Cape_Verde`, switch de visibilidade pública `isActive`, barra sticky de gravação e live preview card sincronizado em tempo real).
    - **✅ `FE-016` concluída:** Categorias Dinâmicas, Espaços Mistos (`isPrimary`) e `categoryId` em Serviços (`useCategories` com cache 1h, seletor multi-categoria no Onboarding e Settings com destaque de categoria principal no `BusinessPreviewCard`, seleção dinâmica de `categoryId` no catálogo de serviços priorizando as categorias do salão e pílulas dinâmicas no Marketplace).
-   - **🟡 `FE-017` pronto para início:** Acessibilidade WCAG 2.1 AA, Resiliência Offline & Testes E2E.
+   - **✅ `FE-017` concluída:** Exibição e Edição da Especialidade no Perfil do Funcionário (`specialty`)  em employee.
+   - **🟡 `FE-018` pronto para início:** Componente `ImageUploadField` e Upload de Fotos (`USER_AVATAR`, `BUSINESS_LOGO`, `SERVICE_IMAGE`, `EMPLOYEE_AVATAR`).
+   - **🟡 `FE-019` pronto para início:** Acessibilidade WCAG 2.1 AA, Resiliência Offline & Testes E2E.
 
 ---
 

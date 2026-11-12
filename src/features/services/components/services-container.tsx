@@ -245,6 +245,7 @@ export function ServicesContainer() {
           durationMinutes: values.durationMinutes,
           price: values.price,
           description: values.description || undefined,
+          imageUrl: values.imageUrl ?? null,
         },
       });
     } else {
@@ -254,6 +255,7 @@ export function ServicesContainer() {
         durationMinutes: values.durationMinutes,
         price: values.price,
         description: values.description || undefined,
+        imageUrl: values.imageUrl ?? null,
       });
     }
   };

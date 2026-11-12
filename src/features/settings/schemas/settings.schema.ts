@@ -40,6 +40,7 @@ const baseBusinessFields = {
       CV_PHONE_REGEX,
       "O número deve ter 7 dígitos e começar por 9, 5, 2 ou 3 (rede de Cabo Verde)",
     ),
+  logoUrl: z.string().nullable().optional(),
   categories: businessCategoriesArraySchema,
 };
 

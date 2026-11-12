@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PhoneInputCV } from "@/features/auth/components";
+import { ImageUploadField } from "@/components/shared";
 import { useCategories } from "@/features/marketplace/hooks/use-categories";
 import { BusinessPreviewCard } from "@/components/admin/onboarding/business-preview-card";
 import { ISLAND_CITIES, ISLANDS } from "@/lib/utils/geography";
@@ -70,6 +71,7 @@ export function BusinessSettingsContainer() {
       city: "Praia",
       location: "",
       phone: "",
+      logoUrl: null,
       isActive: true,
       categories: [],
     },
@@ -91,6 +93,7 @@ export function BusinessSettingsContainer() {
         city: business.city || "Praia",
         location: business.location || "",
         phone: extractPhoneDigits(business.contactPhone || ""),
+        logoUrl: business.logoUrl ?? null,
         isActive: business.isActive ?? true,
         categories: (business.categories ?? []).map((c) => ({
           categoryId: c.id,
@@ -136,6 +139,7 @@ export function BusinessSettingsContainer() {
       city: data.city,
       location: data.location,
       contactPhone: `+238${data.phone}`,
+      logoUrl: data.logoUrl ?? null,
       isActive: data.isActive,
       categories: data.categories,
     });
@@ -145,6 +149,7 @@ export function BusinessSettingsContainer() {
       city: updated.city,
       location: updated.location,
       phone: extractPhoneDigits(updated.contactPhone),
+      logoUrl: updated.logoUrl ?? null,
       isActive: updated.isActive,
       categories: (updated.categories ?? data.categories).map((c) => ({
         categoryId: "id" in c ? c.id : c.categoryId,
@@ -308,6 +313,21 @@ export function BusinessSettingsContainer() {
                 <Store className="w-4 h-4 text-teal-600" />
                 Dados Comerciais
               </h3>
+
+              <Controller
+                name="logoUrl"
+                control={control}
+                render={({ field }) => (
+                  <ImageUploadField
+                    scope="BUSINESS_LOGO"
+                    label="Logótipo ou Foto de Capa do Salão"
+                    description="Aparece no perfil público e nos cartões do Marketplace (JPEG, PNG ou WebP até 5 MB)."
+                    value={field.value}
+                    onChange={field.onChange}
+                    aspect="video"
+                  />
+                )}
+              />
 
               {/* Nome do Salão */}
               <div className="space-y-1.5">
@@ -511,6 +531,7 @@ export function BusinessSettingsContainer() {
             city={watchedValues.city}
             location={watchedValues.location}
             phone={watchedValues.phone}
+            logoUrl={watchedValues.logoUrl}
             categories={previewCategories}
           />
         </div>

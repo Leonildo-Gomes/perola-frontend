@@ -47,7 +47,7 @@ export interface CreateEmployeePayload {
   accessRole?: EmployeeRole;
   phone: string;
   email?: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   assignedServiceIds?: string[];
 }
 
@@ -57,7 +57,7 @@ export interface UpdateEmployeePayload {
   accessRole?: EmployeeRole;
   phone?: string;
   email?: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   isActive?: boolean;
   assignedServiceIds?: string[];
 }

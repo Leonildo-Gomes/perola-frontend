@@ -46,3 +46,9 @@ export interface RegisterPayload {
   password: string;
 }
 
+export interface UpdateUserProfilePayload {
+  name?: string;
+  phone?: string;
+  avatarUrl?: string | null;
+}
+

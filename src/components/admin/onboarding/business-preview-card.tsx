@@ -13,6 +13,7 @@ interface BusinessPreviewCardProps {
   city: string;
   location: string;
   phone: string;
+  logoUrl?: string | null;
   categories?: PreviewCategory[];
 }
 
@@ -22,6 +23,7 @@ export function BusinessPreviewCard({
   city,
   location,
   phone,
+  logoUrl,
   categories = [],
 }: BusinessPreviewCardProps) {
   const orderedCategories = [...categories].sort(
@@ -59,7 +61,16 @@ export function BusinessPreviewCard({
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md transition-all hover:shadow-lg">
         {/* Cover Image with Overlays */}
         <div className="relative h-44 w-full bg-gradient-to-br from-teal-800 to-slate-900">
-          <div className="absolute inset-0 bg-[radial-gradient(#0D9488_1px,transparent_1px)] [background-size:16px_16px] opacity-25" />
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt={displayName}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-[radial-gradient(#0D9488_1px,transparent_1px)] [background-size:16px_16px] opacity-25" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
 
           {/* Top Badges */}

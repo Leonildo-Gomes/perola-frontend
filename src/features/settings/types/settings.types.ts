@@ -17,6 +17,7 @@ export interface CreateBusinessPayload {
   city: string;
   location: string;
   contactPhone: string;
+  logoUrl?: string | null;
   timezone?: string;
   categories: BusinessCategoryItemRequest[];
 }
@@ -27,6 +28,7 @@ export interface UpdateBusinessPayload {
   city?: string;
   location?: string;
   contactPhone?: string;
+  logoUrl?: string | null;
   timezone?: string;
   isActive?: boolean;
   categories?: BusinessCategoryItemRequest[];
@@ -40,6 +42,7 @@ export interface BusinessResponse {
   city: string;
   location: string;
   contactPhone: string;
+  logoUrl?: string | null;
   timezone: string;
   categories?: BusinessCategoryResponse[];
   isActive: boolean;

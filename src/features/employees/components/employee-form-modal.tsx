@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Loader2, Shield, User, Users } from "lucide-react";
+import { ImageUploadField } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,6 +43,7 @@ export function EmployeeFormModal({
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     watch,
     reset,
@@ -54,6 +56,7 @@ export function EmployeeFormModal({
       accessRole: "EMPLOYEE",
       phone: "",
       email: "",
+      avatarUrl: null,
       assignedServiceIds: [],
     },
   });
@@ -73,6 +76,7 @@ export function EmployeeFormModal({
           accessRole: employeeToEdit.accessRole || (employeeToEdit.isOwner ? "OWNER" : "EMPLOYEE"),
           phone: rawDigits,
           email: employeeToEdit.email || "",
+          avatarUrl: employeeToEdit.avatarUrl ?? null,
           assignedServiceIds: employeeToEdit.assignedServiceIds || [],
         });
       } else {
@@ -82,6 +86,7 @@ export function EmployeeFormModal({
           accessRole: "EMPLOYEE",
           phone: "",
           email: "",
+          avatarUrl: null,
           assignedServiceIds: [],
         });
       }
@@ -137,6 +142,22 @@ export function EmployeeFormModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 pt-2">
+          <Controller
+            name="avatarUrl"
+            control={control}
+            render={({ field }) => (
+              <ImageUploadField
+                scope="EMPLOYEE_AVATAR"
+                label="Foto do Profissional"
+                description="Opcional. Exibida na equipa e no seletor de especialista (JPEG, PNG ou WebP até 5 MB)."
+                value={field.value}
+                onChange={field.onChange}
+                aspect="avatar"
+                disabled={isSubmitting}
+              />
+            )}
+          />
+
           {/* Nome Completo */}
           <div className="space-y-1.5">
             <label
