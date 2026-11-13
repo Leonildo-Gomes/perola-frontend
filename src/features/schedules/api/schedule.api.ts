@@ -27,7 +27,15 @@ export async function getSalonAppointments(
   signal?: AbortSignal,
 ): Promise<SalonAppointment[]> {
   const query: Record<string, string | number> = {};
-  if (filter?.date) query.date = filter.date;
+
+  if (filter?.date) {
+    query.startDate = filter.date;
+    query.endDate = filter.date;
+    //query.date = filter.date; // Retrocompatibilidade caso o backend aceite 'date'
+  }
+  //if (filter?.date) query.date = filter.date;
+  if (filter?.startDate) query.startDate = filter.startDate;
+  if (filter?.endDate) query.endDate = filter.endDate;
   if (filter?.employeeId) query.employeeId = filter.employeeId;
   if (filter?.status) query.status = filter.status;
   if (typeof filter?.page === "number") query.page = filter.page;

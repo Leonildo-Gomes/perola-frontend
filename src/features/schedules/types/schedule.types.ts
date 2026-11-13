@@ -39,6 +39,8 @@ export interface SalonAppointment {
 
 export interface SalonAppointmentsFilter {
   date?: string; // YYYY-MM-DD
+  startDate?: string; // YYYY-MM-DD
+  endDate?: string; // YYYY-MM-DD
   employeeId?: string;
   status?: AppointmentStatus;
   page?: number;

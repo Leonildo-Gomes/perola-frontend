@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -91,19 +90,28 @@ export function ScheduleContainer() {
   const appointments = useMemo(() => appointmentsQuery.data ?? [], [appointmentsQuery.data]);
   const employees = useMemo(() => employeesQuery.data ?? [], [employeesQuery.data]);
   const services = useMemo(() => servicesQuery.data ?? [], [servicesQuery.data]);
+  // 1. Filtrar com precisão os agendamentos que pertencem ao dateKey selecionado (fuso CVT)
+  const dayAppointments = useMemo(() => {
+    const rawList = appointmentsQuery.data ?? [];
 
+    return rawList.filter((appointment) => {
+      // Converte o startTime da marcação para a chave 'YYYY-MM-DD' em Cabo Verde
+      const appointmentDateKey = cvDateKey(new Date(appointment.startTime));
+      return appointmentDateKey === dateKey;
+    });
+  }, [appointmentsQuery.data, dateKey]);
   // Daily statistics
   const stats = useMemo(() => {
-    const total = appointments.length;
-    const pending = appointments.filter((a) => a.status === "PENDING").length;
-    const confirmed = appointments.filter((a) => a.status === "CONFIRMED").length;
-    const completed = appointments.filter((a) => a.status === "COMPLETED").length;
-    const expectedRevenue = appointments.reduce((sum, a) => {
+    const total = dayAppointments.length;
+    const pending = dayAppointments.filter((a) => a.status === "PENDING").length;
+    const confirmed = dayAppointments.filter((a) => a.status === "CONFIRMED").length;
+    const completed = dayAppointments.filter((a) => a.status === "COMPLETED").length;
+    const expectedRevenue = dayAppointments.reduce((sum, a) => {
       return a.status !== "CANCELLED" ? sum + Number(a.servicePrice) : sum;
     }, 0);
 
     return { total, pending, confirmed, completed, expectedRevenue };
-  }, [appointments]);
+  }, [dayAppointments]);
 
   // Filtered appointments by search term
   const filteredAppointments = useMemo(() => {
