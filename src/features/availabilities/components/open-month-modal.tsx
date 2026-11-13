@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Calendar,
   Sparkles,
@@ -59,13 +59,29 @@ export function OpenMonthModal({
 }: OpenMonthModalProps) {
   const monthName = MONTH_NAMES[month - 1] || "Mês";
 
-  // Filter holidays belonging to this specific month
-  const monthHolidays = (holidays || []).filter((h) => {
-    const rawDate = h?.date || h?.holidayDate || "";
-    if (!rawDate || typeof rawDate !== "string") return false;
-    const parts = rawDate.split("-");
-    return parts.length >= 2 && parseInt(parts[1], 10) === month;
-  });
+  // Filter holidays belonging strictly to this year and month, and deduplicate
+  const monthHolidays = useMemo(() => {
+    const seenDates = new Set<string>();
+
+    return (holidays || []).filter((h) => {
+      const rawDate = h?.date || h?.holidayDate || "";
+      if (!rawDate || typeof rawDate !== "string") return false;
+
+      const parts = rawDate.split("-");
+      if (parts.length < 3) return false;
+
+      const holidayYear = parseInt(parts[0], 10);
+      const holidayMonth = parseInt(parts[1], 10);
+
+      const matchesCurrentMonth = holidayYear === year && holidayMonth === month;
+      if (!matchesCurrentMonth) return false;
+
+      if (seenDates.has(rawDate)) return false;
+      seenDates.add(rawDate);
+
+      return true;
+    });
+  }, [holidays, year, month]);
 
   // Selected schedule profile template
   const defaultScheduleId =
@@ -81,17 +97,19 @@ export function OpenMonthModal({
     }
   }, [defaultScheduleId, selectedScheduleId]);
 
-  // Reset or initialize holiday decisions to FALSE (standard: take holiday off)
+  // Initialize holiday decisions to FALSE (standard: take holiday off) while keeping existing choices
   useEffect(() => {
-    const initialDecisions: Record<string, boolean> = {};
-    monthHolidays.forEach((h) => {
-      const dateKey = h.date || h.holidayDate;
-      if (dateKey) {
-        initialDecisions[dateKey] = false;
-      }
+    setHolidayDecisions((prev) => {
+      const next: Record<string, boolean> = { ...prev };
+      monthHolidays.forEach((h) => {
+        const dateKey = h.date || h.holidayDate;
+        if (dateKey && next[dateKey] === undefined) {
+          next[dateKey] = false;
+        }
+      });
+      return next;
     });
-    setHolidayDecisions(initialDecisions);
-  }, [month, holidays]);
+  }, [monthHolidays]);
 
   const toggleHoliday = (date: string, value: boolean) => {
     setHolidayDecisions((prev) => ({
@@ -104,12 +122,17 @@ export function OpenMonthModal({
     e.preventDefault();
     if (!selectedScheduleId) return;
 
-    const decisionsList: HolidayDecision[] = Object.entries(holidayDecisions).map(
-      ([holidayDate, workOnHoliday]) => ({
+    // Filter decisions strictly to the current month's holidays
+    const validHolidayDates = new Set(
+      monthHolidays.map((h) => h.date || h.holidayDate).filter(Boolean),
+    );
+
+    const decisionsList: HolidayDecision[] = Object.entries(holidayDecisions)
+      .filter(([date]) => validHolidayDates.has(date))
+      .map(([holidayDate, workOnHoliday]) => ({
         holidayDate,
         workOnHoliday,
-      }),
-    );
+      }));
 
     await onConfirm({
       scheduleId: selectedScheduleId,
@@ -175,8 +198,11 @@ export function OpenMonthModal({
                 </SelectContent>
               </Select>
             ) : (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">
-                A utilizar o perfil predefinido do salão (Segunda a Sábado, 08:00 - 18:00).
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <p>
+                  Nenhum perfil de expediente semanal configurado. Configure primeiro o seu horário na aba <strong>&quot;Expediente Semanal&quot;</strong> antes de abrir a agenda deste mês.
+                </p>
               </div>
             )}
           </div>
@@ -270,8 +296,8 @@ export function OpenMonthModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || (weeklySchedules.length > 0 && !selectedScheduleId)}
-              className="min-h-[44px] rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold shadow-sm transition-all"
+              disabled={isSubmitting || !selectedScheduleId}
+              className="min-h-[44px] rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold shadow-sm transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

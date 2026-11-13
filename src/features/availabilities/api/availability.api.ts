@@ -18,16 +18,16 @@ export const CAPE_VERDE_OFFICIAL_HOLIDAYS: {
   day: number;
   name: string;
 }[] = [
-  { month: 1, day: 1, name: "Ano Novo" },
-  { month: 1, day: 13, name: "Dia da Liberdade e da Democracia" },
-  { month: 1, day: 20, name: "Dia dos Heróis Nacionais" },
-  { month: 5, day: 1, name: "Dia Mundial do Trabalhador" },
-  { month: 6, day: 1, name: "Dia Internacional da Criança" },
-  { month: 7, day: 5, name: "Dia da Independência Nacional" },
-  { month: 8, day: 15, name: "Dia da Assunção de Nossa Senhora" },
-  { month: 11, day: 1, name: "Dia de Todos os Santos" },
-  { month: 12, day: 25, name: "Dia de Natal" },
-];
+    { month: 1, day: 1, name: "Ano Novo" },
+    { month: 1, day: 13, name: "Dia da Liberdade e da Democracia" },
+    { month: 1, day: 20, name: "Dia dos Heróis Nacionais" },
+    { month: 5, day: 1, name: "Dia Mundial do Trabalhador" },
+    { month: 6, day: 1, name: "Dia Internacional da Criança" },
+    { month: 7, day: 5, name: "Dia da Independência Nacional" },
+    { month: 8, day: 15, name: "Dia da Assunção de Nossa Senhora" },
+    { month: 11, day: 1, name: "Dia de Todos os Santos" },
+    { month: 12, day: 25, name: "Dia de Natal" },
+  ];
 
 /**
  * Get Cape Verde national holidays (`GET /api/v1/schedule/holidays`).
@@ -90,7 +90,8 @@ export async function getMonthlySchedules(
         signal,
       },
     );
-  } catch {
+  } catch (err) {
+    console.error("Erro ao buscar monthly schedules:", err);
     return [];
   }
 }

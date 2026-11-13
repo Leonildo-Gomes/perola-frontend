@@ -99,6 +99,8 @@ export function AvailabilityContainer() {
     refetch: refetchMonthly,
   } = useMonthlySchedules(effectiveEmployeeId);
 
+  console.log("monthlySchedules", monthlySchedules);
+
   // 3. Fetch Cape Verde Holidays for this year and next year
   const currentYear = new Date().getFullYear();
   const { data: holidays = [], isLoading: isLoadingHolidays } = useHolidays(currentYear);

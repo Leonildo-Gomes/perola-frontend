@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Calendar, CheckCircle2, AlertCircle, Clock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,14 +26,31 @@ export function MonthlyScheduleCard({
 }: MonthlyScheduleCardProps) {
   const monthName = MONTH_NAMES[month - 1];
   const isOpened = Boolean(schedule?.isOpened);
+  console.log("schedule", schedule);
 
-  // Month-specific holidays
-  const monthHolidays = (holidays || []).filter((h) => {
-    const rawDate = h?.date || h?.holidayDate || "";
-    if (!rawDate || typeof rawDate !== "string") return false;
-    const parts = rawDate.split("-");
-    return parts.length >= 2 && parseInt(parts[1], 10) === month;
-  });
+  // Month-specific holidays (filtered strictly by year/month and deduplicated)
+  const monthHolidays = useMemo(() => {
+    const seenDates = new Set<string>();
+
+    return (holidays || []).filter((h) => {
+      const rawDate = h?.date || h?.holidayDate || "";
+      if (!rawDate || typeof rawDate !== "string") return false;
+
+      const parts = rawDate.split("-");
+      if (parts.length < 3) return false;
+
+      const holidayYear = parseInt(parts[0], 10);
+      const holidayMonth = parseInt(parts[1], 10);
+
+      const matchesCurrentMonth = holidayYear === year && holidayMonth === month;
+      if (!matchesCurrentMonth) return false;
+
+      if (seenDates.has(rawDate)) return false;
+      seenDates.add(rawDate);
+
+      return true;
+    });
+  }, [holidays, year, month]);
 
   return (
     <Card
