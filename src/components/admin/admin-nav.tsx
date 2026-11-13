@@ -54,6 +54,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     allowedRoles: ["OWNER", "EMPLOYEE"],
   },
   {
+    href: "/customers",
+    label: "Clientes",
+    icon: Users,
+    allowedRoles: ["OWNER", "EMPLOYEE"],
+  },
+  {
     href: "/settings",
     label: "Definições",
     icon: Settings,
