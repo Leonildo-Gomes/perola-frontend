@@ -24,10 +24,10 @@ export const availabilityQueries = {
       refetchOnWindowFocus: false,
     }),
 
-  monthlyByEmployee: (employeeId: string) =>
+  monthlyByEmployee: (employeeId: string, year: number = new Date().getFullYear()) =>
     queryOptions({
-      queryKey: availabilityKeys.monthlyByEmployee(employeeId),
-      queryFn: ({ signal }) => getMonthlySchedules(employeeId, signal),
+      queryKey: availabilityKeys.monthlyByEmployee(employeeId, year),
+      queryFn: ({ signal }) => getMonthlySchedules(employeeId, year, signal),
       enabled: Boolean(employeeId),
       staleTime: 30_000,
       gcTime: 10 * 60 * 1000,

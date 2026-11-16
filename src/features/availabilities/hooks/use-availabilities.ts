@@ -7,8 +7,11 @@ export function useHolidays(year: number = new Date().getFullYear()) {
   return useQuery(availabilityQueries.holidays(year));
 }
 
-export function useMonthlySchedules(employeeId: string) {
-  return useQuery(availabilityQueries.monthlyByEmployee(employeeId));
+export function useMonthlySchedules(
+  employeeId: string,
+  year: number = new Date().getFullYear(),
+) {
+  return useQuery(availabilityQueries.monthlyByEmployee(employeeId, year));
 }
 
 export function useWeeklySchedules(employeeId: string) {

@@ -76,20 +76,42 @@ export async function getHolidays(
 }
 
 /**
- * List monthly schedule opening statuses for an employee (`GET /api/v1/schedule/employees/{id}/monthly`).
+ * List monthly schedule opening statuses for an employee in a given year (`GET /api/v1/schedule/employees/{id}/monthly/list?year=YYYY`).
  */
 export async function getMonthlySchedules(
   employeeId: string,
+  year: number = new Date().getFullYear(),
   signal?: AbortSignal,
 ): Promise<MonthlySchedule[]> {
   try {
-    return await api.get<MonthlySchedule[]>(
-      `/api/v1/schedule/employees/${employeeId}/monthly`,
+    const res = await api.get<any>(
+      `/api/v1/schedule/employees/${employeeId}/monthly/list`,
       {
         tenant: true,
         signal,
+        query: { year },
       },
     );
+
+    const rawList = Array.isArray(res)
+      ? res
+      : Array.isArray(res?.content)
+        ? res.content
+        : Array.isArray(res?.data)
+          ? res.data
+          : [];
+
+    return rawList.map((item: any) => ({
+      ...item,
+      year: Number(item.year ?? year),
+      month: Number(item.month),
+      isOpened: Boolean(
+        item.isOpened ??
+        item.opened ??
+        item.is_opened ??
+        (item.status ? item.status === "OPENED" : true),
+      ),
+    }));
   } catch (err) {
     console.error("Erro ao buscar monthly schedules:", err);
     return [];

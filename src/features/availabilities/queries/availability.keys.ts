@@ -5,8 +5,8 @@ export const availabilityKeys = {
   holidayYear: (year: number) => [...availabilityKeys.holidays(), year] as const,
 
   monthly: () => [...availabilityKeys.all, "monthly"] as const,
-  monthlyByEmployee: (employeeId: string) =>
-    [...availabilityKeys.monthly(), employeeId] as const,
+  monthlyByEmployee: (employeeId: string, year?: number) =>
+    [...availabilityKeys.monthly(), employeeId, ...(year ? [year] : [])] as const,
 
   weekly: () => [...availabilityKeys.all, "weekly"] as const,
   weeklyByEmployee: (employeeId: string) =>

@@ -10,6 +10,7 @@ import {
   Palmtree,
   CalendarCheck,
   Info,
+  Filter,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTenantStore } from "@/stores/tenant-store";
@@ -52,6 +53,11 @@ export function AvailabilityContainer() {
   // Selected Employee ID
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
 
+  // Year Selection for Monthly Opening (Ciclo Operacional)
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const [hidePastMonths, setHidePastMonths] = useState<boolean>(true);
+
   // Modal State for opening a specific month
   const [modalMonth, setModalMonth] = useState<{ year: number; month: number } | null>(null);
 
@@ -76,34 +82,41 @@ export function AvailabilityContainer() {
 
   const activeEmployee = employees.find((e) => e.id === effectiveEmployeeId);
 
-  // Calculate the 4 relevant months (Current month + next 3 months)
-  const relevantMonths = useMemo(() => {
-    const today = new Date();
-    const months = [];
-    for (let i = 0; i < 4; i++) {
-      const d = new Date(today.getFullYear(), today.getMonth() + i, 1);
-      months.push({
-        year: d.getFullYear(),
-        month: d.getMonth() + 1, // 1-12
-        isCurrent: i === 0,
-      });
-    }
-    return months;
-  }, []);
-
-  // 2. Fetch Monthly Schedules for selected employee
+  // 2. Fetch Monthly Schedules for selected employee and year (via GET /monthly/list?year=YYYY)
   const {
     data: monthlySchedules = [],
     isLoading: isLoadingMonthly,
     isError: isMonthlyError,
     refetch: refetchMonthly,
-  } = useMonthlySchedules(effectiveEmployeeId);
+  } = useMonthlySchedules(effectiveEmployeeId, selectedYear);
 
-  console.log("monthlySchedules", monthlySchedules);
+  // 3. Fetch Cape Verde Holidays for selected year
+  const { data: holidays = [], isLoading: isLoadingHolidays } = useHolidays(selectedYear);
 
-  // 3. Fetch Cape Verde Holidays for this year and next year
-  const currentYear = new Date().getFullYear();
-  const { data: holidays = [], isLoading: isLoadingHolidays } = useHolidays(currentYear);
+  // Calculate the months to display for the selected year
+  const monthsToDisplay = useMemo(() => {
+    const today = new Date();
+    const isCurrentYear = selectedYear === today.getFullYear();
+    const currentMonthNum = today.getMonth() + 1;
+
+    const all12Months = Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      const isCurrent = isCurrentYear && month === currentMonthNum;
+      const isPast = isCurrentYear ? month < currentMonthNum : selectedYear < today.getFullYear();
+
+      return {
+        year: selectedYear,
+        month,
+        isCurrent,
+        isPast,
+      };
+    });
+
+    if (hidePastMonths && isCurrentYear) {
+      return all12Months.filter((m) => !m.isPast);
+    }
+    return all12Months;
+  }, [selectedYear, hidePastMonths]);
 
   // 4. Fetch Weekly Schedules for selected employee
   const {
@@ -237,10 +250,52 @@ export function AvailabilityContainer() {
             )}
           </div>
 
+          {/* Controls Bar: Year Selection & Cycle (Stitch Design Aligned) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-teal-600" />
+                Ano Operacional:
+              </span>
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/70">
+                {[currentYear, currentYear + 1].map((yr) => (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => setSelectedYear(yr)}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                      selectedYear === yr
+                        ? "bg-white text-teal-700 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {yr}
+                  </button>
+                ))}
+              </div>
+
+              {selectedYear === currentYear && (
+                <button
+                  type="button"
+                  onClick={() => setHidePastMonths(!hidePastMonths)}
+                  className="text-xs text-slate-500 hover:text-teal-700 flex items-center gap-1 transition-colors ml-2"
+                >
+                  <Filter className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{hidePastMonths ? "Mostrar meses passados" : "Ocultar meses passados"}</span>
+                </button>
+              )}
+            </div>
+
+            <div className="text-xs text-slate-500 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse" />
+              <span>Fuso Horário CVT (Praia, UTC-1)</span>
+            </div>
+          </div>
+
           {/* Loading State */}
           {isLoadingMonthly && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="p-6 border rounded-2xl bg-white space-y-4">
                   <div className="flex justify-between items-center">
                     <Skeleton className="h-6 w-36 rounded-md" />
@@ -275,12 +330,12 @@ export function AvailabilityContainer() {
             </div>
           )}
 
-          {/* Ideal State: 4 Months Grid */}
+          {/* Ideal State: Responsive Grid (1 col Mobile, 2 col Tablet, 3 col Desktop) */}
           {!isLoadingMonthly && !isMonthlyError && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              {relevantMonths.map((m) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {monthsToDisplay.map((m) => {
                 const schedule = monthlySchedules.find(
-                  (s) => s.year === m.year && s.month === m.month,
+                  (s) => Number(s.year) === Number(m.year) && Number(s.month) === Number(m.month),
                 );
 
                 return (
@@ -291,6 +346,7 @@ export function AvailabilityContainer() {
                     schedule={schedule}
                     holidays={holidays}
                     isCurrentMonth={m.isCurrent}
+                    isPast={m.isPast}
                     onOpenClick={() => setModalMonth({ year: m.year, month: m.month })}
                   />
                 );
@@ -367,4 +423,3 @@ export function AvailabilityContainer() {
     </div>
   );
 }
-
