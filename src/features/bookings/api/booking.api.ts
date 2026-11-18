@@ -45,8 +45,7 @@ export async function loadBookingTarget(
   businessIdHint?: string | null,
   signal?: AbortSignal,
 ): Promise<BookingTarget | null> {
-  const businessId =
-    businessIdHint || (await findServiceBusinessId(serviceId, signal));
+  const businessId = businessIdHint || (await findServiceBusinessId(serviceId, signal));
   if (!businessId) return null;
   const business = await getBusinessProfile(businessId, signal);
   const service = business.services.find(
