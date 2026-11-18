@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2, Mail, ShieldCheck, Store, User } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/utils";
@@ -20,6 +21,12 @@ export interface RegisterFormProps {
   serverError?: string | null;
   /** 409: email already registered. */
   emailConflict?: boolean;
+  /** Optional prefill values (e.g. following guest booking). */
+  initialValues?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
   onSubmit: (values: RegisterFormValues) => Promise<void>;
 }
 
@@ -28,17 +35,37 @@ const INTENTS: { value: UserIntent; label: string; icon: typeof User }[] = [
   { value: "BUSINESS_OWNER", label: "Registar salão", icon: Store },
 ];
 
-export function RegisterForm({ isLoading, serverError, emailConflict, onSubmit }: RegisterFormProps) {
+export function RegisterForm({ isLoading, serverError, emailConflict, initialValues, onSubmit }: RegisterFormProps) {
   const {
     register,
     control,
     watch,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { intent: "CUSTOMER", name: "", email: "", phone: "", password: "", terms: false as unknown as true },
+    defaultValues: {
+      intent: "CUSTOMER",
+      name: initialValues?.name ?? "",
+      email: initialValues?.email ?? "",
+      phone: initialValues?.phone ?? "",
+      password: "",
+      terms: false as unknown as true,
+    },
   });
+
+  useEffect(() => {
+    if (initialValues?.name || initialValues?.email || initialValues?.phone) {
+      reset((prev) => ({
+        ...prev,
+        name: prev.name || initialValues.name || "",
+        email: prev.email || initialValues.email || "",
+        phone: prev.phone || initialValues.phone || "",
+      }));
+    }
+  }, [initialValues, reset]);
+
   const password = watch("password");
 
   return (

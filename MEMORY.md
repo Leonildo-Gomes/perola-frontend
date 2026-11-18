@@ -170,6 +170,8 @@ pie title Distribuição de Esforço Frontend (19 Tarefas)
 | **`FE-017`** | Exibição e Edição da Especialidade no Perfil do Funcionário (`specialty`) | Wave 6 | P1 (Alto) | 🟢 **Concluído & Validado** | `specialty` em `Employee`, `EmployeeFormModal`, `EmployeeCard` e Passo 1 do `BookingWizardContainer` (alinhado ao DTO do backend) |
 | **`FE-018`** | Componente `ImageUploadField` e Upload de Fotos (`USER_AVATAR`, `BUSINESS_LOGO`, `SERVICE_IMAGE`, `EMPLOYEE_AVATAR`) | Wave 6 | P1 (Alto) | 🟡 **Pronto p/ Início** | Upload `multipart/form-data` para `POST /api/v1/media/upload` e integração em Perfil, Salão, Serviços e Equipa |
 | **`FE-019`** | Acessibilidade WCAG AA, Resiliência Offline & E2E | Wave 7 | P1 (Alto) | 🟡 **Pronto p/ Início** | Depende de `FE-008`, `FE-012`, `FE-014`, `FE-015` |
+| **`FE-020`** | Formulário de Visitante no Passo 3 do `BookingWizard` e Ecrã de Confirmação (`BookingSuccessView`) | Wave 9 | P0 (Crítico) | 🟢 **Concluído & Validado** | Guest Booking sem login prévio, `GuestContactForm`, `BookingSuccessView` e query params pré-preenchidos em `/register` |
+| **`FE-021`** | Ecrã de Carteira de Clientes (`/(admin)/customers`), `CustomerTierBadge` e Classificação Rápida na Agenda | Wave 9 | P1 (Alto) | 🟡 **Pronto p/ Início** | CRM Multi-tenant, classificação VIP e notas internas |
 
 > **Legenda de Estado:**  
 > ⚪ *Planeado* | 🟡 *Pronto p/ Início / Próximo Passo* | 🔵 *Em Desenvolvimento* | 🟢 *Concluído & Validado*
@@ -212,6 +214,8 @@ A rota crítica de arranque segue a seguinte ordem sequencial estrita:
    - **✅ `FE-017` concluída:** Exibição e Edição da Especialidade no Perfil do Funcionário (`specialty`)  em employee.
    - **🟡 `FE-018` pronto para início:** Componente `ImageUploadField` e Upload de Fotos (`USER_AVATAR`, `BUSINESS_LOGO`, `SERVICE_IMAGE`, `EMPLOYEE_AVATAR`).
    - **🟡 `FE-019` pronto para início:** Acessibilidade WCAG 2.1 AA, Resiliência Offline & Testes E2E.
+   - **✅ `FE-020` concluída:** Formulário de Visitante no Passo 3 do `BookingWizard` e Ecrã de Confirmação (`BookingSuccessView` — agendamento sem login, validação `+238`, formulário `GuestContactForm`, preservação anti-409 e convite para criação de conta com pre-fill em `/register`).
+   - **🟡 `FE-021` pronto para início:** Ecrã de Carteira de Clientes (`/(admin)/customers`), `CustomerTierBadge` e Classificação Rápida na Agenda Diária.
 
 ---
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ArrowLeft, CalendarX2, Check, Loader2, SearchX, UserRound, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { BookingSuccessView } from "@/components/booking/BookingSuccessView";
+import { GuestContactForm } from "@/components/booking/GuestContactForm";
 import { EmptyState } from "@/components/shared/feedback";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,10 +18,15 @@ import { useInvalidateSlots, useNextAvailableDate, useSlots } from "../hooks/use
 import { createAppointment } from "../api/booking.api";
 import { isSlotConflictError } from "@/lib/api/errors";
 import { formatKeyLong, formatTime, upcomingDateKeys } from "@/lib/utils/datetime";
-import { type BookingNotesValues, NOTES_MAX_LENGTH, bookingNotesSchema } from "../schemas/booking.schema";
+import {
+  type BookingFormValues,
+  NOTES_MAX_LENGTH,
+  bookingFormSchema,
+  guestContactSchema,
+} from "../schemas/booking.schema";
 import { cn } from "@/lib/utils/utils";
 import { useAuthStore } from "@/stores/auth-store";
-import { ANY_EMPLOYEE, type BookingTarget } from "../types/booking.types";
+import { ANY_EMPLOYEE, type AppointmentResponse, type BookingTarget } from "../types/booking.types";
 import { BookingSummary } from "./booking-summary";
 import { ConflictAlert } from "./conflict-alert";
 import { DateCarousel } from "./date-carousel";
@@ -83,7 +90,7 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
   const invalidateSlots = useInvalidateSlots();
   const dates = useMemo(() => upcomingDateKeys(DAYS_AHEAD), []);
 
-  // Initial state, optionally restored from the URL (returning from login).
+  // Initial state, optionally restored from the URL.
   const initial = useMemo(() => {
     const emp = params.get("employee");
     const date = params.get("date");
@@ -101,12 +108,20 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
   const [startTime, setStartTime] = useState<string | null>(initial.start);
   /** Start time that was lost to another customer (409 or detected on refetch). */
   const [conflictStart, setConflictStart] = useState<string | null>(null);
+  /** Holds successful appointment immediately after creation (FE-020). */
+  const [createdAppointment, setCreatedAppointment] = useState<AppointmentResponse | null>(null);
+
   const conflictRef = useRef<HTMLDivElement>(null);
   const mutationPendingRef = useRef(false);
 
-  const form = useForm<BookingNotesValues>({
-    resolver: zodResolver(bookingNotesSchema),
-    defaultValues: { notes: params.get("notes") ?? "" },
+  const form = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      notes: params.get("notes") ?? "",
+      customerName: params.get("name") ?? "",
+      customerEmail: params.get("email") ?? "",
+      customerPhone: params.get("phone")?.replace(/^\+238/, "") ?? "",
+    },
   });
   const notes = form.watch("notes") ?? "";
 
@@ -168,11 +183,14 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
       queryClient.setQueryData(["appointments", "detail", appointment.id], appointment);
       void invalidateSlots();
       void queryClient.invalidateQueries({ queryKey: ["my-bookings"] });
-      router.push(`/book/confirmed/${appointment.id}`);
+      setCreatedAppointment(appointment);
+      if (typeof window !== "undefined") {
+        window.history.pushState(null, "", `/book/confirmed/${appointment.id}`);
+      }
     },
     onError: (error, vars) => {
       if (isSlotConflictError(error)) {
-        // Keep professional, date and notes; only the lost slot is dropped. Refetch and suggest alternatives.
+        // Keep professional, date, notes and customer fields intact; only the lost slot is dropped.
         setConflictStart(vars.startTime);
         setStartTime(null);
         setStep(3);
@@ -208,25 +226,55 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
 
   const confirm = form.handleSubmit((values) => {
     if (!selectedSlot || mutation.isPending) return;
+
+    // FE-020: If unauthenticated, validate required guest contact fields.
     if (!useAuthStore.getState().isAuthenticated) {
-      const back = new URLSearchParams({ businessId: business.id, employee: employeeChoice, date, start: selectedSlot.startTime });
-      if (values.notes) back.set("notes", values.notes);
-      router.push(`/login?next=${encodeURIComponent(`/book/${serviceId}?${back}`)}`);
-      return;
+      const guestCheck = guestContactSchema.safeParse({
+        customerName: values.customerName,
+        customerEmail: values.customerEmail,
+        customerPhone: values.customerPhone,
+      });
+
+      if (!guestCheck.success) {
+        for (const issue of guestCheck.error.issues) {
+          const path = issue.path[0] as "customerName" | "customerEmail" | "customerPhone";
+          form.setError(path, { message: issue.message });
+        }
+        toast.error("Por favor, preencha os seus dados de contacto obrigatórios.");
+        return;
+      }
     }
+
     mutation.mutate({
       businessId: business.id,
       employeeId: selectedSlot.employeeId,
       serviceId,
       startTime: selectedSlot.startTime,
       notes: values.notes || undefined,
+      customerName: values.customerName?.trim() || undefined,
+      customerEmail: values.customerEmail?.trim().toLowerCase() || undefined,
+      customerPhone: values.customerPhone?.trim()
+        ? values.customerPhone.trim().startsWith("+238")
+          ? values.customerPhone.trim()
+          : `+238${values.customerPhone.trim()}`
+        : undefined,
     });
   });
 
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const canContinue = step === 1 ? employeeIds.length > 0 : step === 2 ? Boolean(selectedSlot) : Boolean(selectedSlot);
   const back = () => (step > 1 ? setStep((step - 1) as Step) : router.back());
   const onPrimary = () => (step < 3 ? setStep((step + 1) as Step) : void confirm());
+
+  // If appointment was just created, render confirmation view immediately (FE-020).
+  if (createdAppointment) {
+    return (
+      <BookingSuccessView
+        appointment={createdAppointment}
+        business={business}
+        employeeName={employeeLabel}
+      />
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 lg:grid lg:grid-cols-[1fr_360px] lg:gap-8">
@@ -325,6 +373,15 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
                 )}
               </div>
               <BookingSummary className="lg:hidden" business={business} service={service} employeeLabel={employeeLabel} startTime={selectedSlot?.startTime ?? null} />
+
+              {/* Guest / Authenticated Contact Form (FE-020) */}
+              <GuestContactForm
+                register={form.register}
+                control={form.control}
+                errors={form.formState.errors}
+                disabled={mutation.isPending}
+              />
+
               <div>
                 <label htmlFor="booking-notes" className="mb-1.5 block text-sm font-semibold text-slate-900">
                   Notas ou observações para o profissional <span className="font-normal text-slate-500">(opcional)</span>
@@ -335,7 +392,7 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
                   maxLength={NOTES_MAX_LENGTH + 50}
                   aria-invalid={Boolean(form.formState.errors.notes)}
                   aria-describedby="booking-notes-help"
-                  placeholder="Ex.: preferência por corte desfiado nas pontas"
+                  placeholder="Ex.: preferência por corte desfiado nas pontas, alergias..."
                   className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:border-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600"
                   {...form.register("notes")}
                 />
@@ -344,14 +401,10 @@ function BookingWizard({ serviceId, target }: { serviceId: string; target: Booki
                   <span className="text-slate-500">{notes.length}/{NOTES_MAX_LENGTH}</span>
                 </div>
               </div>
+
               <p className="rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
-                Pode cancelar ou reagendar a marcação em <strong>Minhas Marcações</strong>. Avise o salão com antecedência se não puder comparecer.
+                Cancelamento gratuito até 24h antes. Avise o salão com antecedência se não puder comparecer.
               </p>
-              {!isAuthenticated && (
-                <p className="rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-900">
-                  Vai precisar de iniciar sessão para confirmar. Mantemos a sua escolha.
-                </p>
-              )}
             </>
           )}
         </div>

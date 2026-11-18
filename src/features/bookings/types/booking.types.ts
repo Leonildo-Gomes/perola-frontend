@@ -58,13 +58,23 @@ export interface CreateAppointmentRequest {
   serviceId: string;
   startTime: string;
   notes?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 export interface AppointmentResponse {
   id: string;
   businessId: string;
+  businessName?: string;
   customerId: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerTier?: string | null;
+  customerInternalNotes?: string | null;
   employeeId: string;
+  employeeName?: string;
   serviceId: string;
   serviceName: string;
   servicePrice: number;

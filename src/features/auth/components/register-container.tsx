@@ -23,6 +23,10 @@ export function RegisterContainer() {
   const [error, setError] = useState<string | null>(null);
   const [emailConflict, setEmailConflict] = useState(false);
   const returnUrl = params.get("next") ?? params.get("returnUrl");
+  const prefillName = params.get("name") ?? "";
+  const prefillEmail = params.get("email") ?? "";
+  const rawPhone = params.get("phone") ?? "";
+  const prefillPhone = rawPhone.replace(/^\+238/, "").trim();
 
   const handleSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
@@ -77,7 +81,17 @@ export function RegisterContainer() {
     >
       <SocialAuthButton mode="register" disabled={isLoading} onCredential={handleGoogle} />
       <AuthDivider>ou preencha os seus dados</AuthDivider>
-      <RegisterForm isLoading={isLoading} serverError={error} emailConflict={emailConflict} onSubmit={handleSubmit} />
+      <RegisterForm
+        isLoading={isLoading}
+        serverError={error}
+        emailConflict={emailConflict}
+        initialValues={{
+          name: prefillName,
+          email: prefillEmail,
+          phone: prefillPhone,
+        }}
+        onSubmit={handleSubmit}
+      />
     </AuthCard>
   );
 }
