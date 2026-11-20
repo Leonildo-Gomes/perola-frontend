@@ -36,6 +36,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     allowedRoles: ["OWNER", "EMPLOYEE"],
   },
   {
+    href: "/customers",
+    label: "Clientes",
+    icon: Users,
+    allowedRoles: ["OWNER", "EMPLOYEE"],
+  },
+  {
     href: "/services",
     label: "Serviços",
     icon: Scissors,
@@ -51,12 +57,6 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     href: "/availability",
     label: "Disponibilidade",
     icon: CalendarRange,
-    allowedRoles: ["OWNER", "EMPLOYEE"],
-  },
-  {
-    href: "/customers",
-    label: "Clientes",
-    icon: Users,
     allowedRoles: ["OWNER", "EMPLOYEE"],
   },
   {

@@ -9,6 +9,7 @@ import {
   MoreVertical,
   Phone,
   Sparkles,
+  StickyNote,
   User,
   X,
   XCircle,
@@ -25,6 +26,10 @@ import {
 import { formatTime } from "@/lib/utils/datetime";
 import { cn, formatCurrency, formatDuration } from "@/lib/utils/utils";
 import type { SalonAppointment } from "../types/schedule.types";
+import {
+  CustomerQuickTierPopover,
+  CustomerTierBadge,
+} from "@/components/admin/customers";
 
 interface AppointmentBlockProps {
   appointment: SalonAppointment;
@@ -85,9 +90,29 @@ export function AppointmentBlock({
 
           {/* Client & Service */}
           <div className="min-w-0">
-            <h4 className="font-bold text-slate-900 text-sm truncate">
-              {appointment.customerName}
-            </h4>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h4 className="font-bold text-slate-900 text-sm truncate">
+                {appointment.customerName}
+              </h4>
+              {appointment.customerId && (
+                <CustomerQuickTierPopover
+                  businessId={appointment.businessId}
+                  customerId={appointment.customerId}
+                  customerName={appointment.customerName}
+                  customerPhone={appointment.customerPhone}
+                  initialTier={appointment.customerTier}
+                  initialNotes={appointment.customerInternalNotes}
+                />
+              )}
+              {appointment.customerInternalNotes && (
+                <span
+                  className="inline-flex items-center text-amber-700 hover:text-amber-900 cursor-help"
+                  title={`Nota interna: ${appointment.customerInternalNotes}`}
+                >
+                  <StickyNote className="h-3.5 w-3.5" />
+                </span>
+              )}
+            </div>
             <p className="text-xs text-amber-800 truncate">
               {appointment.serviceName} ({formatDuration(appointment.serviceDuration)})
             </p>
@@ -176,9 +201,21 @@ export function AppointmentBlock({
           </div>
 
           <div>
-            <h4 className="font-bold text-slate-900 text-sm truncate">
-              {appointment.customerName}
-            </h4>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h4 className="font-bold text-slate-900 text-sm truncate">
+                {appointment.customerName}
+              </h4>
+              {appointment.customerId && (
+                <CustomerQuickTierPopover
+                  businessId={appointment.businessId}
+                  customerId={appointment.customerId}
+                  customerName={appointment.customerName}
+                  customerPhone={appointment.customerPhone}
+                  initialTier={appointment.customerTier}
+                  initialNotes={appointment.customerInternalNotes}
+                />
+              )}
+            </div>
             <p className="text-xs text-indigo-800">
               Proposta: <strong>{proposedTime || "Novo horário"}</strong> (Horário anterior: {startTimeFormatted})
             </p>
@@ -244,9 +281,29 @@ export function AppointmentBlock({
 
           {/* Client & Service */}
           <div>
-            <h4 className="font-bold text-slate-900 text-sm truncate">
-              {appointment.customerName}
-            </h4>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h4 className="font-bold text-slate-900 text-sm truncate">
+                {appointment.customerName}
+              </h4>
+              {appointment.customerId && (
+                <CustomerQuickTierPopover
+                  businessId={appointment.businessId}
+                  customerId={appointment.customerId}
+                  customerName={appointment.customerName}
+                  customerPhone={appointment.customerPhone}
+                  initialTier={appointment.customerTier}
+                  initialNotes={appointment.customerInternalNotes}
+                />
+              )}
+              {appointment.customerInternalNotes && (
+                <span
+                  className="inline-flex items-center text-teal-800 hover:text-teal-950 cursor-help"
+                  title={`Nota interna: ${appointment.customerInternalNotes}`}
+                >
+                  <StickyNote className="h-3.5 w-3.5" />
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-500 truncate">
               {appointment.serviceName} • {formatDuration(appointment.serviceDuration)}
             </p>
@@ -334,6 +391,9 @@ export function AppointmentBlock({
             <span className="font-bold text-slate-800 text-xs truncate">
               {appointment.customerName}
             </span>
+            {appointment.customerTier && (
+              <CustomerTierBadge tier={appointment.customerTier} size="xs" />
+            )}
             <span className="text-[11px] text-slate-500 truncate hidden sm:inline">
               • {appointment.serviceName}
             </span>

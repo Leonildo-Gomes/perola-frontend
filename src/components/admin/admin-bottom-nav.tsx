@@ -20,6 +20,12 @@ const ITEMS: AdminBottomNavItem[] = [
     allowedRoles: ["OWNER", "EMPLOYEE"],
   },
   {
+    href: "/customers",
+    label: "Clientes",
+    icon: Users,
+    allowedRoles: ["OWNER", "EMPLOYEE"],
+  },
+  {
     href: "/services",
     label: "Serviços",
     icon: Scissors,

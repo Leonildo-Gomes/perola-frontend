@@ -61,3 +61,40 @@ export interface CreateReviewPayload {
   comment?: string;
 }
 
+/** CRM Customer Classification Tiers per salon (V6 / Feature 001) */
+export type CustomerTier = "NEW" | "REGULAR" | "RECURRENT" | "VIP" | "WARNING";
+
+/** Salon CRM Customer representation (`GET /api/v1/businesses/{id}/customers`) */
+export interface BusinessCustomer {
+  customerId: string;
+  name: string;
+  email: string;
+  phone: string;
+  hasRegisteredAccount: boolean;
+  tier: CustomerTier;
+  internalNotes?: string | null;
+  totalAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalSpentCve: number;
+  lastAppointmentAt?: string | null;
+  createdAt: string;
+}
+
+/** Full details with appointment history (`GET /api/v1/businesses/{id}/customers/{customerId}`) */
+export interface BusinessCustomerDetail extends BusinessCustomer {
+  recentAppointments?: CustomerAppointment[];
+}
+
+export interface BusinessCustomersFilter {
+  search?: string;
+  tier?: CustomerTier;
+  page?: number;
+  size?: number;
+}
+
+export interface UpdateBusinessCustomerPayload {
+  tier?: CustomerTier;
+  internalNotes?: string | null;
+}
+

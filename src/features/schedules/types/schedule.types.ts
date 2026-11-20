@@ -1,6 +1,7 @@
 import type { AppointmentStatus } from "@/features/bookings/types/booking.types";
+import type { CustomerTier } from "@/features/customers/types/customer.types";
 
-export type { AppointmentStatus };
+export type { AppointmentStatus, CustomerTier };
 
 export type {
   AppointmentReview,
@@ -19,6 +20,8 @@ export interface SalonAppointment {
   customerName?: string;
   customerPhone?: string;
   customerEmail?: string;
+  customerTier?: CustomerTier | null;
+  customerInternalNotes?: string | null;
   employeeId: string;
   employeeName?: string;
   employeeRole?: string;

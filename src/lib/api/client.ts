@@ -43,6 +43,7 @@ export function configureApiClient(next: Partial<ApiSessionHandlers>) {
 const ADMIN_PREFIXES = [
   "/dashboard",
   "/schedule",
+  "/customers",
   "/services",
   "/employee",
   "/team",

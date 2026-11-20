@@ -2,11 +2,15 @@ import { api } from "@/lib/api/client";
 import type { Page } from "@/types/api.types";
 import type {
   AppointmentReview,
+  BusinessCustomer,
+  BusinessCustomerDetail,
+  BusinessCustomersFilter,
   CancelAppointmentPayload,
   CreateReviewPayload,
   CustomerAppointment,
   CustomerAppointmentsFilter,
   RescheduleAppointmentPayload,
+  UpdateBusinessCustomerPayload,
 } from "../types/customer.types";
 
 /**
@@ -81,6 +85,81 @@ export async function submitReview(
     `/api/v1/appointments/${appointmentId}/reviews`,
     payload,
     { tenant: false },
+  );
+}
+
+/**
+ * Fetch the salon's CRM customers paginated (`GET /api/v1/businesses/{businessId}/customers`).
+ */
+export async function getBusinessCustomers(
+  businessId: string,
+  filter?: BusinessCustomersFilter,
+  signal?: AbortSignal,
+): Promise<Page<BusinessCustomer>> {
+  const query: Record<string, string | number> = {};
+  if (filter?.search) query.search = filter.search;
+  if (filter?.tier) query.tier = filter.tier;
+  if (typeof filter?.page === "number") query.page = filter.page;
+  if (typeof filter?.size === "number") query.size = filter.size;
+
+  const res = await api.get<any>(
+    `/api/v1/businesses/${businessId}/customers`,
+    {
+      tenant: true,
+      signal,
+      query: Object.keys(query).length > 0 ? query : undefined,
+    },
+  );
+
+  const raw = res?.data ?? res;
+  if (Array.isArray(raw)) {
+    return {
+      content: raw,
+      page: filter?.page ?? 0,
+      size: filter?.size ?? raw.length,
+      totalElements: raw.length,
+      totalPages: 1,
+      last: true,
+    };
+  }
+
+  return raw as Page<BusinessCustomer>;
+}
+
+/**
+ * Fetch a single salon customer's profile & appointment history (`GET /api/v1/businesses/{businessId}/customers/{customerId}`).
+ */
+export async function getBusinessCustomerDetail(
+  businessId: string,
+  customerId: string,
+  signal?: AbortSignal,
+): Promise<BusinessCustomerDetail> {
+  const res = await api.get<any>(
+    `/api/v1/businesses/${businessId}/customers/${customerId}`,
+    {
+      tenant: true,
+      signal,
+    },
+  );
+
+  const raw = res?.data ?? res?.customer ?? res?.result ?? res;
+  return raw as BusinessCustomerDetail;
+}
+
+/**
+ * Update a customer's classification tier and/or private notes (`PATCH /api/v1/businesses/{businessId}/customers/{customerId}`).
+ */
+export async function updateBusinessCustomer(
+  businessId: string,
+  customerId: string,
+  payload: UpdateBusinessCustomerPayload,
+): Promise<BusinessCustomer> {
+  return api.patch<BusinessCustomer>(
+    `/api/v1/businesses/${businessId}/customers/${customerId}`,
+    payload,
+    {
+      tenant: true,
+    },
   );
 }
 

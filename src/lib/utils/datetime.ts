@@ -26,7 +26,16 @@ const timeFmt = new Intl.DateTimeFormat("pt-PT", {
 });
 
 /** ISO instant → "09:30" in Cape Verde time. */
-export const formatTime = (iso: string) => timeFmt.format(new Date(iso));
+export const formatTime = (iso?: string | null) => {
+  if (!iso) return "--:--";
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "--:--";
+    return timeFmt.format(d);
+  } catch {
+    return "--:--";
+  }
+};
 
 function keyToDate(key: string) {
   const [y, m, d] = key.split("-").map(Number);
@@ -48,10 +57,21 @@ export const formatKeyLong = (key: string) =>
   new Intl.DateTimeFormat("pt-PT", { ...utc, weekday: "long", day: "numeric", month: "long" }).format(keyToDate(key));
 
 /** "quinta-feira, 12 de novembro" for an ISO instant, in Cape Verde time. */
-export const formatInstantLong = (iso: string) =>
-  new Intl.DateTimeFormat("pt-PT", { timeZone: CV_TIMEZONE, weekday: "long", day: "numeric", month: "long" }).format(
-    new Date(iso),
-  );
+export const formatInstantLong = (iso?: string | null) => {
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    return new Intl.DateTimeFormat("pt-PT", {
+      timeZone: CV_TIMEZONE,
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    }).format(d);
+  } catch {
+    return "—";
+  }
+};
 
 /** "Sexta-feira, 6 de Novembro de 2026" for a date key. */
 export const formatDateHeader = (key: string) => {

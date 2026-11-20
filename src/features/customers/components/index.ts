@@ -4,4 +4,6 @@ export * from "./cancel-modal";
 export * from "./my-bookings-container";
 export * from "./reschedule-modal";
 export * from "./review-modal";
+export * from "./customers-container";
+
 
